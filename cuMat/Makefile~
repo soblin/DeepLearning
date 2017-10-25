@@ -1,0 +1,112 @@
+CC=g++
+NVCC=nvcc
+CUDA_TOP=/usr/local/cuda-9.0
+INCLUDE=-I$(CUDA_TOP)/include -gencode=arch=compute_50,code=\"sm_50,compute_50\"
+
+OBJ=softmax_kernel.o mat_log_kernel.o mat_sin_kernel.o mat_cos_kernel.o adam2_kernel.o dropout_kernel.o mat_mul_elementwise_plus_kernel.o mat_sqrt_kernel.o mat_sqrt_d_kernel.o relu_d_kernel.o relu_kernel.o prelu_d_kernel.o prelu_kernel.o sigmoid_d_kernel.o sigmoid_kernel.o tanh_d_kernel.o tanh_kernel.o softmax_cross_entropy_kernel.o mat_sum_kernel.o mat_l2_kernel.o mat_div_kernel.o mat_ones_kernel.o mat_mul_elementwise_kernel.o mat_vec_mul_kernel.o mat_dot_product_kernel.o mat_exp_kernel.o element_wise_clip_kernel.o mat_inverse_kernel.o mat_inverse_d_kernel.o batch_sum_kernel.o vec_to_mat_kernel.o im2col.o pooling.o slice_rows_kernel.o
+
+libcumat.so:$(OBJ)
+	gcc -shared -o libcumat.so $(OBJ) #-sharedは共有ライブラリを作るオプション
+
+softmax_kernel.o: softmax_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c softmax_kernel.cu $(INCLUDE)
+
+mat_log_kernel.o: mat_log_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_log_kernel.cu $(INCLUDE)
+
+mat_sin_kernel.o: mat_sin_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_sin_kernel.cu $(INCLUDE)
+
+mat_cos_kernel.o: mat_cos_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_cos_kernel.cu $(INCLUDE)
+
+adam2_kernel.o: adam2_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c adam2_kernel.cu $(INCLUDE)
+
+dropout_kernel.o: dropout_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c dropout_kernel.cu $(INCLUDE)
+
+mat_mul_elementwise_plus_kernel.o: mat_mul_elementwise_plus_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_mul_elementwise_plus_kernel.cu
+
+mat_sqrt_kernel.o: mat_sqrt_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_sqrt_kernel.cu $(INCLUDE)
+
+relu_d_kernel.o: relu_d_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c relu_d_kernel.cu $(INCLUDE)
+
+relu_kernel.o: relu_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c relu_kernel.cu $(INCLUDE)
+
+prelu_d_kernel.o: prelu_d_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c prelu_d_kernel.cu $(INCLUDE)
+
+prelu_kernel.o: prelu_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c prelu_kernel.cu $(INCLUDE)
+
+sigmoid_d_kernel.o: sigmoid_d_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c sigmoid_kernel.cu $(INCLUDE)
+
+sigmoid_kernel.o: sigmoid_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c sigmoid_kernel.cu $(INCLUDE)
+
+tanh_d_kernel.o: tanh_d_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c tanh_d_kernel.cu $(INCLUDE)
+
+tanh_kernel.o: tang_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c tanh_kernel.cu $(INCLUDE)
+
+softmax_cross_entropy_kernel.o: softmax_cross_entropy_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c softmax_cross_entropy_kernel.cu $(INCLUDE)
+
+mat_sum_kernel.o: mat_sum_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_sum_kernel.cu $(INCLUDE)
+
+mat_l2_kernel.o: mat_l2_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_l2_kernel.cu $(INCLUDE)
+
+mat_div_kernel.o: mat_div_kernel.cu
+	$(NVCC) -Xcompile -fPIC -c mat_div_kernel.cu $(INCLUDE)
+
+mat_ones_kernel.o: mat_ones_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_ones_kernel.cu $(INCLUDE)
+
+mat_mul_elementwise_kernel.o: mat_mul_elementwise_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_mul_elementwise_kernel.cu $(INCLUDE)
+
+mat_vec_mul_kernel.o: mat_vec_mul_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_vec_mul_kernel.cu $(INCLUDE)
+
+mat_dot_product_kernel.o: mat_dot_product_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_dot_product_kernel.cu $(INCLUDE)
+
+mat_exp_kernel.o: mat_exp_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_exp_kernel.cu $(INCLUDE)
+
+element_wise_clip_kernel.o: element_wise_clip_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c element_wise_clip_kernel.cu $(INCLUDE)
+
+mat_inverse_kernel.o: mat_inverse_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_inverse_kernel.cu $(INCLUDE)
+
+mat_inverse_d_kernel.o: mat_inverse_d_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c mat_inverse_kernel.cu $(INCLUDE)
+
+vec_to_mat_kernel.o: vec_to_mat_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c vec_to_mat_kernel.cu $(INCLUDE)
+
+batch_sum_kernel.o: batch_sum_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c batch_sum_kernel.cu $(INCLUDE)
+
+im2col.o: im2col.cu
+	$(NVCC) -Xcompiler -fPIC -c im2col.cu $(INCLUDE)
+
+pooling.o: pooling.cu
+	$(NVCC) -Xcompiler -fPIC -c pooling.cu $(INCLUDE)
+
+slice_rows_kernel.o: slice_rows_kernel.cu
+	$(NVCC) -Xcompiler -fPIC -c slice_rows_kernel.cu $(INCLUDE)
+
+clean:
+	rm -f libcumat.so
+	rm -f *.o

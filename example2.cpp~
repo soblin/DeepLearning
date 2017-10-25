@@ -1,0 +1,47 @@
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <memory>
+
+class Function;
+
+class Variable{
+public:
+  float a = 0;
+  Function *creator = NULL;
+
+  Variable(float a){
+    this->a = a;
+  }
+};
+
+using PVariable =  std::shared_ptr<Variable>;
+
+class Function{
+public:
+  std::vector<PVariable> v;
+
+  PVariable forward(PVariable v1, PVariable v2){
+    v.push_back(v1);
+    v.push_back(v2);
+
+    PVariable pv = PVariable(new Variable(0));
+    pv->creator = this;
+
+    pv->a += v1->a;
+    pv->a += v2->a;
+
+    return pv;
+  }
+
+  PVariable forward(PVariable v1){
+    v.push_back(v1);
+
+    PVariable pv = PVariable(new Variable(0));
+    pv->creator = this;
+
+    pv->a += v1->a;
+
+    return pv;
+  }
+};
