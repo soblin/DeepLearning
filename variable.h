@@ -37,7 +37,7 @@ public:
   string name;
 
   cuMat data;
-  cuMatSparse dast_sparse;
+  cuMatSparse data_sparse;
   cuMat grad;
   cuMat seed;
 
