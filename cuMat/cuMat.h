@@ -74,15 +74,16 @@ private:
     
 public:
 
+    //accesser
     inline int row() const { return rows_; }
     
     inline int col() const { return cols_; }
 
-    inline float* m_device() const { return m_device_; }
+    //    inline float* m_device_ const { return m_device_; }
 
-    inline float *m_host() const { return m_host_;}
+    //    inline float *m_host_ const { return m_host_;}
 
-    inline cublasHandle_t cuda_handle() const { return cuda_handle_;}
+    //    inline cublasHandle_t cuda_handle_ const { return cuda_handle_;}
     
     cuMat(){
 	rows_ = cols_ = 0;
@@ -100,9 +101,9 @@ public:
 	cublasCreate(&cuda_handle_);
 	cudaThreadSynchronize();
 
-	new_matrix(a.row(), a.col());
+	new_matrix(a.rows_, a.cols_);
 
-	cudaError_t error = cudaMemcpy(m_device_, a.m_device(), rows_*cols_*sizeof(m_device_), cudaMemcpyDeviceToDevice);
+	cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(m_device_), cudaMemcpyDeviceToDevice);
 
 	if(error != cudaSuccess) FatalError("cuMat copy constructer failed");
     }
@@ -112,16 +113,32 @@ public:
 	cublasDestroy(cuda_handle_);
     }
 
+    void memMallocHost(){
+	m_host_ = (float*)malloc(rows_*cols_*sizeof(*m_host_));
+	for(int i=0; i<rows_; i++){
+	    for(int j=0; j<cols_; j++){
+		m_host_[IDX2F(i, j, rows_)] = 0.0;
+	    }
+	}
+    }
+
+    void memMallocDevice(){
+	cudaError_t error = cudaMalloc((void**)&m_device_, rows_*cols_*sizeof(*m_device_));
+	if(error != cudaSuccess) FatalError("memMallocDevice failed\n");
+	cudaMemset(m_device_, 0x00, rows_*cols_*sizeof(*m_device_));
+	cudaThreadSynchronize();
+    }
+    
     void new_matrix(const int rows, const int cols){
-	if(this->row() != rows || this->col() != cols){
+	if(this->rows_ != rows || this->cols_ != cols){
 	    if(m_device_ != nullptr || m_host_ != nullptr) del_matrix();
 	    this->rows_ = rows;
 	    this->cols_ = cols;
 
 	    cudaError_t error;
-	    cublasStatus_t status;
 
 	    error = cudaMalloc((void**)&m_device_, rows_*cols_*sizeof(*m_device_));
+	    if(error != cudaSuccess) FatalError("new_matrix failed\n");
 	    cudaMemset(m_device_, 0x00, rows_*cols_*sizeof(*m_device_));
 	    cudaThreadSynchronize();
 	    mallocCounter.up();
@@ -141,8 +158,114 @@ public:
 	cudaThreadSynchronize();
     }
 
+    void memHostToDevice(){
+	cudaError_t error = cudaMemcpy(m_device_, m_host_, rows_*cols_*sizeof(*m_device_),
+				       cudaMemcpyHostToDevice);
+	if(error != cudaSuccess) FatalError("memHostToDevice failed\n");
+    }
+
+    void memDeviceToHost(){
+	if(m_host_ == nullptr) this->memMallocHost();
+	cudaError_t error = cudaMemcpy(m_host_, m_device_, rows_*cols_*sizeof(*m_device_),
+				       cudaMemcpyDeviceToHost);
+	if(error != cudaSuccess) FatalError("memDevicetoHost faield\n");
+    }
+
+    void memSetHost(int i, int j, float val){
+	if(m_host_ == nullptr) this->memMallocHost();
+	m_host_[IDX2F(i, j, rows_)] = val;
+    }
+    
+    void memSetHost(float *v){
+	if(m_host_ == nullptr) this->memMallocHost();
+	if(m_device_ == nullptr) FatalError("memSetHost m_device_ is nullptr");
+
+	cudaError_t error = cudaMemcpy(m_device_, v, rows_*cols_*sizeof(m_device_),
+				       cudaMemcpyHostToDevice);
+	if(error != cudaSuccess) FatalError("memSetHost(float *v) failed\n");
+    }
+
+    void memSetDevice(float *v){
+	cudaError_t error = cudaMemcpy(m_device_, v, rows_*cols_*sizeof(*m_device_),
+				       cudaMemcpyDeviceToHost);
+	if(error != cudaSuccess) FatalError("memSetDevice(float *v) failed\n");
+    }
+
+    void memSetDeviceRow(float *v, int row_index){
+	cudaError_t error = cudaMemcpy(m_device_ + row_index*cols_, v, cols_*sizeof(float),
+				       cudaMemcpyDeviceToDevice);
+	if(error != cudaSuccess) FatalError("memSetDeviceRow failed\n");
+    }
+
+    void memSetDeviceCol(float *v, int col_index){
+	cudaError_t error = cudaMemcpy(m_device_ + col_index*rows_, v, rows_*cols_*sizeof(float), cudaMemcpyDeviceToDevice);
+	if(error != cudaSuccess) FatalError("memSetDeviceCol failed\n");
+    }
+
+    void toHostArray(){
+	if(m_host_ == nullptr) this->memMallocHost();
+	memDeviceToHost();
+
+	m_host_array_.resize(rows_*cols_);
+	for(int i=0; i<rows_; i++){
+	    for(int j=0; j<cols_; j++){
+		m_host_array_[IDX2F(i, j, rows_)] = m_host_[IDX2F(i, j, rows_)];
+	    }
+	}
+    }
+
+    void fromHostArray(){
+	if(m_host_ == nullptr) this->memMallocHost();
+	if(m_device_ == nullptr) this->memMallocDevice();
+	for(int i=0; i<rows_; i++){
+	    for(int j=0; j<cols_; j++){
+		m_host_[IDX2F(i, j, rows_)] = m_host_array_[IDX2F(i, j, cols_)];
+	    }
+	}
+
+	memHostToDevice();
+    }
+
+    cuMat sliceRows(int offset, int len){
+	cuMat r(len, this->cols_);
+
+	slice_rows_kernel_exec(m_device_, r.m_device_, cols_, rows_, offset, len);
+
+	return r;
+    }
+
+    void joinRows(cuMat &a, int offset, int len){
+	join_rows_kernel_exec(a.m_device_, m_device_, cols_, rows_, offset, len);
+    }
+
+    cuMat &operator=(const cuMat &a){
+	new_matrix(a.rows_, a.cols_);
+	cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(*m_device_),
+				      cudaMemcpyDeviceToDevice);
+	if(error != cudaSuccess) FatalError("cuMat operator=(const cuMat &) failed\n");
+
+	return *this;
+    }
+    
     float operator()(const int i, const int j){
-	
+	if(m_host_ == nullptr){
+	    this->memMallocHost();
+	}
+	this->memDeviceToHost();
+	return m_host_[IDX2F(i, j, rows_)];
+    }
+
+    friend void printRows(std::ostream &output, const cuMat &a, int i){
+	output << "[";
+	if(a.cols_ < 11){
+	    for(int j=0; j<a.cols_; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
+	}
+	else{
+	    for(int j=0; j<3; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
+	    std::cout << "..., ";
+	    for(int j=a.cols_-2; j<a.cols_; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
+	}
+	output << "]";
     }
     /*
      arithmatic manipulation functions
@@ -156,14 +279,14 @@ public:
      operator/ ... same as div
     */
 
-    friend cuMat operator+(const cuMat &)a;
+    friend cuMat operator+(const cuMat &);
     void ones(){
 	mat_ones_kernel_exec(m_device_, m_device_, cols_, rows_);
     }
 
     void plus(const cuMat &b, cuMat &r){
 	float alpha = 1, beta = 1;
-	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, b.m_device(), rows_, r.m_device(), r.row());
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, b.m_device_, rows_, r.m_device_, r.rows_);
 
 	if(stat != CUBLAS_STATUS_SUCCESS){
 	    FatalError("cannot cublasSgeam");
@@ -176,7 +299,7 @@ public:
 	i.ones();
 
 	float alpha = 1;
-	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device(), r.row(), r.m_device(), r.row());
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device_, r.rows_, r.m_device_, r.rows_);
 	if(stat != CUBLAS_STATUS_SUCCESS){
 	    FatalError("cannot cublasSgeam");
 	}
@@ -185,10 +308,34 @@ public:
 
     void plus(const float beta, cuMat &i, cuMat &r){
 	float alpha = 1;
-	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, i.m_device(), i.row(), r.m_device(), r.row());
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, i.m_device_, i.rows_, r.m_device_, r.rows_);
 	if(stat != CUBLAS_STATUS_SUCCESS){
 	    FatalError("cannot cublasSgeam");
 	}
+	cudaThreadSynchronize();
+    }
+
+    void minus(const cuMat &b, cuMat &r){
+	float alpha = 1;
+	float beta = -1;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, b.m_device_, rows_, r.m_device_, r.rows_);
+	if(stat != CUBLAS_STATUS_SUCCESS){
+	    FatalError("cannot cublasSgeam in minus(const cuMat &, const cuMat &)");
+	}
+	cudaThreadSynchronize();
+    }
+
+    void mul(const float alpha, cuMat &r){
+	float beta = 0;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device_, rows_, r.m_device_, r.rows_);
+	if(stat !=CUBLAS_STATUS_SUCCESS) FatalError("cannot cublasSgeam in mul(cosnt float, cuMat &)");
+	cudaThreadSynchronize();
+    }
+
+    void mul_plus(const float alpha, cuMat &r){
+	float beta = 1;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device_, r.rows_, r.m_device_, r.rows_);
+	if(stat != CUBLAS_STATUS_SUCCESS) FatalError("cannot cublasSgeam in mul_plus");
 	cudaThreadSynchronize();
     }
 };

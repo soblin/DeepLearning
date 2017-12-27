@@ -1,9 +1,9 @@
 # cuMat
 
-CUDAを使ったC++行列計算ライブラリー
+C++ Matrix library using CUDA
 
 ```bash
-make
+cmake . && make
 ```
 
-libcumat.so　を生成。
+libcumat.so creates libcumat.so

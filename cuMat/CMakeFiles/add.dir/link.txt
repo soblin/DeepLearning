@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -g  -rdynamic CMakeFiles/add.dir/add_generated_add.cu.o  -o add -Wl,-rpath,/usr/local/cuda-9.1/lib64 /usr/local/cuda-9.1/lib64/libcudart.so 
