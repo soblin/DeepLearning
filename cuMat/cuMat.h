@@ -2,6 +2,8 @@
 #define CUMAT_H_
 
 #include "mat_ones_kernel.h"
+#include "mat_mul_elementwise_kernel.h"
+#include "mat_mul_plus_elementwise_kernel.h"
 
 #include <iostream>
 #include <cmath>
@@ -332,11 +334,18 @@ public:
 	cudaThreadSynchronize();
     }
 
+    void mul(const cuMat &m, const cuMat &r){
+	mat_mul_elementwise_kernel_exec(m_device_, m.m_device_, r.m_device_, cols_, rows_);
+    }
+
     void mul_plus(const float alpha, cuMat &r){
 	float beta = 1;
 	cublasStatus_t stat = cublasSgeam(r.cuda_handle_, CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device_, r.rows_, r.m_device_, r.rows_);
 	if(stat != CUBLAS_STATUS_SUCCESS) FatalError("cannot cublasSgeam in mul_plus");
 	cudaThreadSynchronize();
+    }
+    void mul_plus(const cuMat &m, const cuMat &r, float alpha, float beta){
+	mat_mul_plus_elementwise_kernel_exec(m_device_, m.m_device_, r.m_device_, alpha, beta, cols_, rows_);
     }
 };
 #endif

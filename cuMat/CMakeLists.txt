@@ -25,4 +25,6 @@ CUDA_ADD_LIBRARY(
   cumat
   SHARED
   mat_ones_kernel.cu
+  mat_mul_elementwise_kernel.cu
+  mat_mul_plus_elementwise_kernel.cu
   )
