@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -Wall -g  -shared -Wl,-soname,libcumat.so -o libcumat.so CMakeFiles/cumat.dir/cumat_generated_mat_ones_kernel.cu.o -Wl,-rpath,/usr/local/cuda-9.1/lib64 /usr/local/cuda-9.1/lib64/libcudart.so 
