@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -g  -rdynamic CMakeFiles/a.out.dir/a.out_generated_add.cu.o  -o a.out  -L/usr/local/cuda/lib64 -Wl,-rpath,/usr/local/cuda/lib64:/usr/local/cuda-9.1/lib64 /usr/local/cuda-9.1/lib64/libcudart.so -lcudart 
