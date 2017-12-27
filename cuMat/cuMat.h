@@ -1,12 +1,13 @@
 #ifndef CUMAT_H_
 #define CUMAT_H_
 
+#include "mat_ones_kernel.h"
+
 #include <iostream>
 #include <cmath>
 #include <random>
 #include <sstream>
 #include <map>
-
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/vector.hpp>
@@ -69,7 +70,7 @@ private:
     int rows_ = 0;
     int cols_ = 0;
 
-    cublasHandle_t cuda_handle;
+    cublasHandle_t cuda_handle_;
     
 public:
 
@@ -78,21 +79,25 @@ public:
     inline int col() const { return cols_; }
 
     inline float* m_device() const { return m_device_; }
+
+    inline float *m_host() const { return m_host_;}
+
+    inline cublasHandle_t cuda_handle() const { return cuda_handle_;}
     
     cuMat(){
 	rows_ = cols_ = 0;
-	cublasCreate(&cuda_handle);
+	cublasCreate(&cuda_handle_);
 	cudaThreadSynchronize();
     }
 
     cuMat(const int rows, const int cols){
-	cublasCreate(&cuda_handle);
+	cublasCreate(&cuda_handle_);
 	cudaThreadSynchronize();
 	new_matrix(rows, cols);
     }
 
     cuMat(const cuMat &a){
-	cublasCreate(&cuda_handle);
+	cublasCreate(&cuda_handle_);
 	cudaThreadSynchronize();
 
 	new_matrix(a.row(), a.col());
@@ -104,7 +109,7 @@ public:
 
     ~cuMat(){
 	del_matrix();
-	cublasDestroy(cuda_handle);
+	cublasDestroy(cuda_handle_);
     }
 
     void new_matrix(const int rows, const int cols){
@@ -136,6 +141,9 @@ public:
 	cudaThreadSynchronize();
     }
 
+    float operator()(const int i, const int j){
+	
+    }
     /*
      arithmatic manipulation functions
      -plus/minus ... for operator+/-.
@@ -146,7 +154,42 @@ public:
      operator+/- .. same as plus/minus
      operator* ... same as mul(doesnot operate @-multiplication)
      operator/ ... same as div
-
     */
+
+    friend cuMat operator+(const cuMat &)a;
+    void ones(){
+	mat_ones_kernel_exec(m_device_, m_device_, cols_, rows_);
+    }
+
+    void plus(const cuMat &b, cuMat &r){
+	float alpha = 1, beta = 1;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, b.m_device(), rows_, r.m_device(), r.row());
+
+	if(stat != CUBLAS_STATUS_SUCCESS){
+	    FatalError("cannot cublasSgeam");
+	}
+	cudaThreadSynchronize();
+    }
+
+    void plus(const float beta, cuMat &r){
+	cuMat i(rows_, cols_);
+	i.ones();
+
+	float alpha = 1;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, r.m_device(), r.row(), r.m_device(), r.row());
+	if(stat != CUBLAS_STATUS_SUCCESS){
+	    FatalError("cannot cublasSgeam");
+	}
+	cudaThreadSynchronize();
+    }
+
+    void plus(const float beta, cuMat &i, cuMat &r){
+	float alpha = 1;
+	cublasStatus_t stat = cublasSgeam(r.cuda_handle(), CUBLAS_OP_N, CUBLAS_OP_N, rows_, cols_, &alpha, m_device_, rows_, &beta, i.m_device(), i.row(), r.m_device(), r.row());
+	if(stat != CUBLAS_STATUS_SUCCESS){
+	    FatalError("cannot cublasSgeam");
+	}
+	cudaThreadSynchronize();
+    }
 };
 #endif

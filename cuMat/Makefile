@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named add
+# Target rules for targets named cumat
 
 # Build rule for target.
-add: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 add
-.PHONY : add
+cumat: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cumat
+.PHONY : cumat
 
 # fast build rule for target.
-add/fast:
-	$(MAKE) -f CMakeFiles/add.dir/build.make CMakeFiles/add.dir/build
-.PHONY : add/fast
+cumat/fast:
+	$(MAKE) -f CMakeFiles/cumat.dir/build.make CMakeFiles/cumat.dir/build
+.PHONY : cumat/fast
 
 # Help Target
 help:
@@ -131,7 +131,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... add"
+	@echo "... cumat"
 .PHONY : help
 
 

@@ -130,7 +130,7 @@ CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
 CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=Project
+CMAKE_PROJECT_NAME:STATIC=cumat
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -328,6 +328,30 @@ a.out_BINARY_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
 //Value Computed by CMake
 a.out_SOURCE_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
 
+//Value Computed by CMake
+cumat_BINARY_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
+
+//Dependencies for the target
+cumat_LIB_DEPENDS:STATIC=general;/usr/local/cuda-9.1/lib64/libcudart.so;
+
+//Value Computed by CMake
+cumat_SOURCE_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
+
+//Dependencies for the target
+libcuMat.so_LIB_DEPENDS:STATIC=general;/usr/local/cuda-9.1/lib64/libcudart.so;
+
+//Value Computed by CMake
+libcumat.so_BINARY_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
+
+//Dependencies for the target
+libcumat.so_LIB_DEPENDS:STATIC=general;/usr/local/cuda-9.1/lib64/libcudart.so;
+
+//Value Computed by CMake
+libcumat.so_SOURCE_DIR:STATIC=/home/mamoru/DeepLearning/cuMat
+
+//Dependencies for the target
+mat_ones_kernel.cu_LIB_DEPENDS:STATIC=general;/usr/local/cuda-9.1/lib64/libcudart.so;
+
 
 ########################
 # INTERNAL cache entries
@@ -472,7 +496,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 CUDA_64_BIT_DEVICE_CODE-ADVANCED:INTERNAL=1
 //List of intermediate files that are part of the cuda dependency
 // scanning.
-CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/home/mamoru/DeepLearning/cuMat/CMakeFiles/a.out.dir//a.out_generated_add.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/add.o.dir//add.o_generated_add.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/add.dir//add_generated_add.cu.o.depend
+CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/home/mamoru/DeepLearning/cuMat/CMakeFiles/a.out.dir//a.out_generated_add.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/add.o.dir//add.o_generated_add.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/add.dir//add_generated_add.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/libcuMat.so.dir//libcuMat.so_generated_mat_ones_kernel.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/libcumat.so.dir//libcumat.so_generated_mat_ones_kernel.cu.o.depend;/home/mamoru/DeepLearning/cuMat/CMakeFiles/cumat.dir//cumat_generated_mat_ones_kernel.cu.o.depend
 //ADVANCED property for variable: CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE
 CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_BUILD_CUBIN
