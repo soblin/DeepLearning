@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mamoru/DeepLearning/matrix/eigen-test.cc
+iostream
+-
+vector
+-
+eigen3/Eigen/Dense
+-
+

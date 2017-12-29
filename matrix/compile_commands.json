@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/mamoru/DeepLearning/matrix",
+  "command": "/usr/bin/c++    -Wall -g -I/home/mamoru/DeepLearning/matrix/EIGEN3_INCLUDE_DIR    -std=gnu++11 -o CMakeFiles/a.out.dir/eigen-test.cc.o -c /home/mamoru/DeepLearning/matrix/eigen-test.cc",
+  "file": "/home/mamoru/DeepLearning/matrix/eigen-test.cc"
+}
+]

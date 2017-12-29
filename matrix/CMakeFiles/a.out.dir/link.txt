@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -g   CMakeFiles/a.out.dir/eigen-test.cc.o  -o a.out -rdynamic 

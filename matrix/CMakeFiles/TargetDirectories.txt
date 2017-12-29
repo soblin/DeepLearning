@@ -1,0 +1,1 @@
+/home/mamoru/DeepLearning/matrix/CMakeFiles/a.out.dir

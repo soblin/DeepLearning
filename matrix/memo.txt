@@ -1,0 +1,37 @@
+C++で学ぶディープラーニングのcuMat.hのAPI
+
+A + a = a + A = A + aI
+A - B
+A * B (is elemntwise)
+A * a = a * A = A @ aI
+A / B (is elementwise)
+A / a (is elementwise)
+A += B, A += a, A -= A, A -= a, A *= B, A *= a are also elementwise
+
+cubalsSgeam calculates alpha * op(A) + beta * op(B)
+
+cublasStatus_t cublasSgeam(cublasHandle_t handle,
+               cublasOperation_t transa,
+               cublasOperation_t transb,
+               //size for each matrix
+               int m, int n,
+               //A
+               const float *alpha,
+               const float *A, int lda,
+               //B
+               const float *beta,
+               const float *B, int ldb,
+               //result
+               float *C, int ldc
+               )
+
+cublaSgemm calculates C <- alpha*op(A)@op(B) + beta*C
+cublasStatus_t cublasSgemm(cublasHandle_t handle,
+               cublasOperation_t transa,
+               cublasOperation_t transb,
+               intm, int n, int k,
+               const float *alpha,
+               const float *A(op(A) is m X k matrix), int lda(==A.row()),
+               const float *B(op(B) is k X n matrix), int ldb(==B.row()),
+               const float *beta,
+               float *C, int ldc)
