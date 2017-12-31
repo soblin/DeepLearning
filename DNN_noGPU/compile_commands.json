@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/mamoru/DeepLearning/DNN_noGPU",
+  "command": "/usr/bin/c++    -Wall -Wextra -g   -std=gnu++11 -o CMakeFiles/a.out.dir/function.cc.o -c /home/mamoru/DeepLearning/DNN_noGPU/function.cc",
+  "file": "/home/mamoru/DeepLearning/DNN_noGPU/function.cc"
+}
+]

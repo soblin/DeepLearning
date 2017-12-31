@@ -424,7 +424,7 @@ public:
     }
 
     //r[i][j] <- this[i][j] * m[i][j]
-    void mul(const cuMat &m, const cuMat &r){
+    void mul(const cuMat &m, cuMat &r){
         mat_mul_elementwise_kernel_exec(m_device_, m.m_device_, r.m_device_, cols_, rows_);
     }
 
@@ -466,7 +466,7 @@ public:
     }
 
     // r <- this@b where this(rows_ X cols_) and b(rows_ X)
-    cuMat dot(const cuMat &b, const cuMat &r){
+    void dot(const cuMat &b, cuMat &r){
         float alpha = 0;
         float beta = 0;
         cublasStatus_t stat = cublasSgemm(cuda_handle_,
@@ -483,7 +483,7 @@ public:
     }
 
     //r += this@b
-    cuMat dot_plus(const cuMat &b, cuMat &r){
+    void dot_plus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = 1;
 
