@@ -1,3 +1,0 @@
-/home/mamoru/DeepLearning/cuMat/CMakeFiles/rebuild_cache.dir
-/home/mamoru/DeepLearning/cuMat/CMakeFiles/edit_cache.dir
-/home/mamoru/DeepLearning/cuMat/CMakeFiles/cumat.dir
