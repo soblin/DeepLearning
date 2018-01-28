@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _mat_div_kernel_
-#define _mat_div_kernel_
+#ifndef MAT_DIV_KERNEL_H_
+#define MAT_DIV_KERNEL_H_
 
 __global__ void mat_div_kernel(const float * __restrict__ src1,
                                const float * __restrict__ src2,
