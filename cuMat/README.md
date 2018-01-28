@@ -43,6 +43,7 @@ void transpose_dot_plus(const cuMat &B,
                         cuMat &C)              C += trans(this)@B
 void dot_transpose_plus(const cuMAt &B,
                         cuMat &C)              C += this@trans(B)
+                        
 void transpose(void)                           this <= trans(this)
 
 void plus_util(float alpha, float beta,
