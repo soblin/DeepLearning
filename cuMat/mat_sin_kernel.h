@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _mat_sin_kernel_
-#define _mat_sin_kernel_
+#ifndef MAT_SIN_KERNEL_H_
+#define MAT_SIN_KERNEL_H_
 
 __device__ __forceinline__ float mat_sin(float a, float alpha);
 

@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _prelu_kernel_
-#define _prelu_kernel_
+#ifndef PRELU_KERNEL_H_
+#define PRELU_KERNEL_H_
 
 #ifdef __cplusplus
 extern "C"{

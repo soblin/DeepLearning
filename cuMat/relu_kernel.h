@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _relu_kernel_
-#define _relu_kernel_
+#ifndef RELU_KERNEL_H_
+#define RELU_KERNEL_H_
 
 __device__ __forceinline__ float relu(float a);
 

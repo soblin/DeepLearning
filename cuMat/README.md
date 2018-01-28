@@ -8,6 +8,7 @@ cmake . && make
 creates libcumat.so
 
 cublasSgeam computes C <= alpha*op(A) + beta*op(B)
+
 cublasSgemm computes C <= alpah*op(A)@op(B) + beta*C
 
 member functions

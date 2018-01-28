@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _mat_sqrt_kernel_
-#define _mat_sqrt_kernel_
+#ifndef MAT_SQRT_KERNEL_H_
+#define MAT_SQRT_KERNEL_H_
 
 __device__ __forceinline__ float mat_sqrt(float a, float alpha);
 

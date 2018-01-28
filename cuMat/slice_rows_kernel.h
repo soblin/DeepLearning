@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _slice_rows_kernel_
-#define _slice_rows_kernel_
+#ifndef SLICE_ROWS_KERNEL_H_
+#define SLICE_ROWS_KERNEL_H_
 
 __global__ void slice_rows_kernel(const float * __restrict__ src,
                                   float * __restrict__ dst, int m, int n, int offse, int len);

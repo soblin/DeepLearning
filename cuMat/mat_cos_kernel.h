@@ -1,7 +1,7 @@
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
-#ifndef _mat_cos_kernel_
-#define _mat_cos_kernel_
+#ifndef MAT_COS_KERNEL_H_
+#define MAT_COS_KERNEL_H_
 
 __device__ __forceinline__ float mat_cos(float a, float alpha);
 
