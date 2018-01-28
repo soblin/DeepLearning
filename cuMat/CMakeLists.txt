@@ -27,4 +27,13 @@ CUDA_ADD_LIBRARY(
   mat_ones_kernel.cu
   mat_mul_elementwise_kernel.cu
   mat_mul_plus_elementwise_kernel.cu
+  slice_rows_kernel.cu
+  mat_log_kernel.cu
+  mat_sqrt_kernel.cu
+  mat_sqrt_d_kernel.cu
+  mat_cos_kernel.cu
+  mat_sin_kernel.cu
+  relu_kernel.cu
+  relu_d_kernel.cu
+  prelu_kernel.cu
   )

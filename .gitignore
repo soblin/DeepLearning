@@ -3,3 +3,4 @@ cuMat/CMakeFiles
 cuMat/CMakeCache.txt
 cuMat/Makefile
 cuMat/cmake_install.cmake
+cuMat/libcumat.so

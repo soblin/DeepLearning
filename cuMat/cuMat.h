@@ -4,6 +4,17 @@
 #include "mat_ones_kernel.h"
 #include "mat_mul_elementwise_kernel.h"
 #include "mat_mul_plus_elementwise_kernel.h"
+#include "matmod_kernel.h"
+#include "slice_rows_kernel.h"
+#include "mat_div_kernel.h"
+#include "mat_log_kernel.h"
+#include "mat_sqrt_kernel.h"
+#include "mat_sqrt_d_kernel.h"
+#include "mat_cos_kernel.h"
+#include "mat_sin_kernel.h"
+#include "relu_kernel.h"
+#include "relu_d_kernel.h"
+#include "prelu_kernel.h"
 
 #include <iostream>
 #include <cmath>
@@ -281,15 +292,14 @@ public:
             FatalError("m_host_ is nullptr so cannot <<");
         }
 
-        cudaError_t error = cudaMemcpy(a.m_host_, a.m_device_, a.rows_*a.cols_*sizeof(*m_device),
-                                       cudaMemcpyDeviceToHost);
-        if(error != cudaSucess){
+        cudaError_t error = cudaMemcpy(a.m_host_, a.m_device_, a.rows_*a.cols_*sizeof(*m_device_), cudaMemcpyDeviceToHost);
+        if(error != cudaSuccess){
             FatalError("cudaMemcpy failed in <<");
         }
         
-        output << "A matrix of " << a.rows_ << " X " << a.cols_ << std::end;
+        output << "A matrix of " << a.rows_ << " X " << a.cols_ << std::endl;
         output << "[";
-        if(a.rows < 11){
+        if(a.rows_ < 11){
             for(int i=0; i<a.rows_; i++){
                 printRows(output, a, i);
                 if(i != a.rows_-1) output << std::endl;
@@ -312,11 +322,11 @@ public:
     }
     /*
       arithmatic manipulation functions
-      -plus/minus ... for operator+/-.
+      plus/minus ... for operator+/-.
       (cuMat + cuMat), (cuMat + float)
-      -mul ... cuMat * float, cuMat*cuMat(element_wise)
-      -dot ... cuMat@cuMat(multipliction of matricies)
-      -div ... cuMat * (1 / float)
+      mul ... cuMat * float, cuMat*cuMat(element_wise)
+      dot ... cuMat@cuMat(multipliction of matricies)
+      div ... cuMat * (1 / float)
       operator+/- .. same as plus/minus
       operator* ... same as mul(doesnot operate @-multiplication)
       operator/ ... same as div
@@ -326,9 +336,9 @@ public:
         if(rows_ != a.rows_ || cols_ != a.cols_){
             FatalError("the size doesnot match in copy.");
         }
-        cudaError_t error = cudaMemcpy(m_device_, .a.m_device_, rows_*cols_*sizeof(*m_device_),
+        cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyDeviceToDevice);
-        if(error != cudaSuccss) FatalError("cudaMemcpy failed in copy");
+        if(error != cudaSuccess) FatalError("cudaMemcpy failed in copy");
     }
 
     void ones(){
@@ -455,12 +465,12 @@ public:
 
     //r[i][j] <-  this[i][j] / b[i][j]
     void div(const cuMat &b, const cuMat &r){
-        mat_div_kernel_exec(m_device_, b.m_device_, r.m_device, cols_, rows_);
+        mat_div_kernel_exec(m_device_, b.m_device_, r.m_device_, cols_, rows_);
     }
 
     //A.dot(B) returns A@B
     cuMat dot(const cuMat &b){
-        cuMat r(this->rows_, b.cols);
+        cuMat r(this->rows_, b.cols_);
         dot(b, r);
         return r;
     }
@@ -489,10 +499,10 @@ public:
 
         cublasStatus_t stat = cublasSgemm(cuda_handle_,
                                           CUBLAS_OP_N, CUBLAS_OP_N,
-                                          rows_, b.cols_ cols_,
+                                          rows_, b.cols_, cols_,
                                           &alpha,
-                                          m_device, rows_,
-                                          b.m_device, b.rows_,
+                                          m_device_, rows_,
+                                          b.m_device_, b.rows_,
                                           &beta,
                                           r.m_device_, r.rows_
                                           );
@@ -519,10 +529,147 @@ public:
         cudaThreadSynchronize();
     }
 
-    void transpose_dot_plus(const cuMat &b, cuMat &r){
+    //
+    void dot_transpose_plus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = 1;
-        cublasStatus_t stat = 
+        cublasStatus_t stat = cublasSgemm(cuda_handle_,
+                                          CUBLAS_OP_N, CUBLAS_OP_T,
+                                          rows_, b.rows_, cols_,
+                                          &alpha,
+                                          m_device_, rows_,
+                                          b.m_device_, b.rows_,
+                                          &beta,
+                                          r.m_device_, r.rows_);
+        checkCublasErrors(stat);
+        if(stat != CUBLAS_STATUS_SUCCESS) FatalError("cannot dot_transpose_plus cublasSgemm");
+        cudaThreadSynchronize();
+    }
+
+    cuMat transpose(){
+        cuMat r(cols_, rows_);
+        transpose(r);
+        return r;
+    }
+    
+    void transpose(cuMat &r){
+        float alpha = 1;
+        float beta = 0;
+        cublasStatus_t stat = cublasSgeam(cuda_handle_,
+                                          CUBLAS_OP_T, CUBLAS_OP_N,
+                                          cols_, rows_,
+                                          &alpha,
+                                          m_device_, rows_,
+                                          &beta,
+                                          r.m_device_, cols_,
+                                          r.m_device_, cols_);
+        checkCublasErrors(stat);
+        if(stat != CUBLAS_STATUS_SUCCESS){
+            FatalError("cannnot transpose cublasSgem");
+        }
+        cudaThreadSynchronize();
+    }
+    
+    void plus_util(float alpha, float beta, cuMat &b, cuMat &r){
+        cublasStatus_t stat = cublasSgeam(cuda_handle_,
+                                          CUBLAS_OP_N, CUBLAS_OP_N,
+                                          rows_, cols_,
+                                          &alpha, m_device_, rows_,
+                                          &beta, b.m_device_, rows_,
+                                          r.m_device_, rows_);
+        if(stat != CUBLAS_STATUS_SUCCESS) FatalError("cannot plus_util cublasSgeam");
+        cudaThreadSynchronize();
+    }
+
+    void log(cuMat &r, float alpha){
+        mat_log_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+    cuMat log(){
+        cuMat r(rows_, cols_);
+        log(r, 0.0);
+        return r;
+    }
+
+    cuMat sqrt(){
+        cuMat r(rows_, cols_);
+        sqrt(r, 1e-8);
+        return r;
+    }
+
+    void sqrt(cuMat &r, float alpha){
+        mat_sqrt_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+    cuMat sqrt_d(){
+        cuMat r(rows_, cols_);
+        sqrt_d(r, 1e-8);
+        return r;
+    }
+
+    void sqrt_d(cuMat &r, float alpha){
+        mat_sqrt_d_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+    cuMat  sin(){
+        cuMat r(rows_, cols_);
+        sin(r);
+        return r;
+    }
+
+    void sin(cuMat &r){
+        mat_sin_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
+    }
+
+    cuMat cos(){
+        cuMat r(rows_, cols_);
+        cos(r);
+        return r;
+    }
+
+    void cos(cuMat &r){
+        mat_cos_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
+    }
+
+    cuMat relu(){
+        cuMat r(rows_, cols_);
+        relu(r);
+        return r;
+    }
+
+    void relu(cuMat &r){
+        relu_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat relu_d(){
+        cuMat r(rows_, cols_);
+        relu_d(r);
+        return r;
+    }
+
+    void relu_d(cuMat &r){
+        relu_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat prelu(cuMat &a){
+        cuMat r(rows_, cols_);
+        prelu(a, r);
+        return r;
+    }
+
+    void prelu(cuMat &a, cuMat &r){
+        prelu_kernel_exec(m_device_, a.m_device_, r.m_device_, cols_, rows_);
+    }
+
+
+    cuMat prelu_d(cuMat &a, cuMat &da){
+        cuMat r(rows_, cols_);
+        prelu_d(a, r, da);
+        return r;
+    }
+    
+    void prelu_d(cuMat &a, cuMat &r, cuMat &da){
+        prelu_d_kernel_exec(m_device_, a.m_device_, r.m_device_, cols_, rows_);
     }
 };
 #endif
