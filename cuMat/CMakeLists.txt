@@ -36,4 +36,10 @@ CUDA_ADD_LIBRARY(
   relu_kernel.cu
   relu_d_kernel.cu
   prelu_kernel.cu
+  sigmoid_kernel.cu
+  sigmoid_d_kernel.cu
+  softmax_kernel.cu
+  tanh_kernel.cu
+  tanh_d_kernel.cu
+  mat_l2_kernel.cu
   )

@@ -15,6 +15,13 @@
 #include "relu_kernel.h"
 #include "relu_d_kernel.h"
 #include "prelu_kernel.h"
+#include "prelu_d_kernel.h"
+#include "sigmoid_kernel.h"
+#include "sigmoid_d_kernel.h"
+#include "tanh_kernel.h"
+#include "tanh_d_kernel.h"
+#include "softmax_kernel.h"
+#include "mat_l2_kernel.h"
 
 #include <iostream>
 #include <cmath>
@@ -321,12 +328,6 @@ public:
         return output;
     }
     /*
-      arithmatic manipulation functions
-      plus/minus ... for operator+/-.
-      (cuMat + cuMat), (cuMat + float)
-      mul ... cuMat * float, cuMat*cuMat(element_wise)
-      dot ... cuMat@cuMat(multipliction of matricies)
-      div ... cuMat * (1 / float)
       operator+/- .. same as plus/minus
       operator* ... same as mul(doesnot operate @-multiplication)
       operator/ ... same as div
@@ -344,6 +345,119 @@ public:
     void ones(){
         mat_ones_kernel_exec(m_device_, m_device_, cols_, rows_);
     }
+
+    friend cuMat operator+(const cuMat &a, const cuMat &b){
+        cuMat r = a;
+        r.plus(b, r);
+
+        return r;
+    }
+
+    friend cuMat operator+(const float a, const cuMat &b){
+        cuMat r = b;
+        r.plus(a, r);
+
+        return r;
+    }
+
+    friend cuMat operator+(const cuMat &a, const float b){
+        cuMat r = a;
+        r.plus(a, r);
+
+        return r;
+    }
+
+    friend cuMat operator-(const cuMat &a, const cuMat &b){
+        cuMat r = a;
+        //r <= r(==a) - b
+        r.minus(b, r);
+
+        return r;
+    }
+
+    //elementwise!!!
+    friend cuMat operator*(const cuMat &a, const cuMat &b){
+        cuMat r = a;
+        r.mul(b, r);
+
+        return r;
+    }
+
+    friend cuMat operator*(const float a, const cuMat &b){
+        cuMat r = b;
+        r.mul(a, r);
+
+        return r;
+    }
+
+    friend cuMat operator*(const cuMat &a, const float b){
+        cuMat r = a;
+        r.mul(b, r);
+
+        return r;
+    }
+
+    friend cuMat operator/(float p, cuMat &b){
+        cuMat r = b;
+        b.div(p, r);
+
+        return r;
+    }
+
+    friend cuMat operator/(const cuMat &a, float b){
+        cuMat r = a;
+        r.mul(1.0/b, r);
+
+        return r;
+    }
+    
+    friend cuMat operator/(const cuMat &a, const cuMat &b){
+        cuMat r = a;
+        r.div(b, r);
+
+        return r;
+    }
+
+    cuMat &operator+=(const cuMat &a){
+        plus(a, *this);
+        return *this;
+    }
+
+    cuMat &operator+=(const float a){
+        plus(a, *this);
+        return *this;
+    }
+
+    cuMat &operator-=(const cuMat &b){
+        minus(b, *this);
+        return *this;
+    }
+
+    cuMat &operator-=(const float b){
+        plus(-b, *this);
+        return *this;
+    }
+
+    cuMat &operator*=(const cuMat &a){
+        mul(a, *this);
+        return *this;
+    }
+
+    cuMat &operator*=(const float a){
+        mul(a, *this);
+        return *this;
+    }
+
+private:
+
+    /*
+      arithmatic manipulation functions
+      plus/minus ... for operator+/-.
+      (cuMat + cuMat), (cuMat + float)
+      mul ... cuMat * float, cuMat*cuMat(element_wise)
+      dot ... cuMat@cuMat(multipliction of matricies)
+      div ... cuMat * (1 / float)
+    */
 
     //r[i][j] <- this[i][j] + b
     void plus(const cuMat &b, cuMat &r){
@@ -468,6 +582,7 @@ public:
         mat_div_kernel_exec(m_device_, b.m_device_, r.m_device_, cols_, rows_);
     }
 
+public:
     //A.dot(B) returns A@B
     cuMat dot(const cuMat &b){
         cuMat r(this->rows_, b.cols_);
@@ -669,7 +784,73 @@ public:
     }
     
     void prelu_d(cuMat &a, cuMat &r, cuMat &da){
-        prelu_d_kernel_exec(m_device_, a.m_device_, r.m_device_, cols_, rows_);
+        prelu_d_kernel_exec(m_device_, a.m_device_, r.m_device_, da.m_device_, cols_, rows_);
+    }
+
+    cuMat sigmoid(){
+        cuMat r(rows_, cols_);
+        sigmoid(r);
+        return r;
+    }
+
+    void sigmoid(cuMat &r){
+        sigmoid_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat sigmoid_d(){
+        cuMat r(rows_, cols_);
+        sigmoid_d(r);
+        return r;;
+    }
+
+    void sigmoid_d(cuMat &r){
+        sigmoid_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat tanh(){
+        cuMat r(rows_, cols_);
+        tanh(r);
+        return r;
+    }
+
+    void tanh(cuMat &r){
+        tanh_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat tanh_d(){
+        cuMat r(rows_, cols_);
+        tanh_d(r);
+        return r;
+    }
+
+    void tanh_d(cuMat &r){
+        tanh_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    cuMat softmax(){
+        cuMat r(rows_, cols_);
+        softmax(r);
+        return r;
+    }
+
+    void softmax(cuMat &r){
+        softmax_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    float l2(){
+        float *sum_d;
+        float sum_h = 0;
+        cudaError_t error = cudaMalloc((void**)&sum_d, sizeof(*sum_d));
+        if(error != cudaSuccess) FatalError("cudaMalloc failed in l2");
+        cudaThreadSynchronize();
+        cudaMemset(sum_d, 0x00, sizeof(*sum_d));
+        mat_l2_kernel_exec(m_device_, sum_d, cols_, rows_);
+
+        error = cudaMemcpy(&sum_h, sum_d, sizeof(*sum_d), cudaMemcpyDeviceToHost);
+        if(error != cudaSuccess) FatalError("cudaMemcpy in l2");
+        cudaFree(sum_d);
+
+        return std::sqrt(sum_h);
     }
 };
 #endif
