@@ -42,4 +42,6 @@ CUDA_ADD_LIBRARY(
   tanh_kernel.cu
   tanh_d_kernel.cu
   mat_l2_kernel.cu
+  mat_exp_kernel.cu
+  mat_inverse_kernel.cu
   )

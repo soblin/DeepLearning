@@ -5,8 +5,6 @@
   @date 3/10
  */
 
-//cudaMemcpy(dst, src, size, flag)
-
 #ifndef CUMAT_H_
 #define CUMAT_H_
 
@@ -31,6 +29,8 @@
 #include "tanh_d_kernel.h"
 #include "softmax_kernel.h"
 #include "mat_l2_kernel.h"
+#include "mat_exp_kernel.h"
+#include "mat_inverse_kernel.h"
 
 #include <iostream>
 #include <cmath>
@@ -46,8 +46,8 @@
 
 /*!
    @brief convert 2D-index to 1D-array index(column major)
-   @param (i) rows
-   @param (j) cols
+   @param i rows
+   @param j cols
    @return j * width_of_row + i
  */
 inline int IDX2F(int i, int j, int ld){
@@ -816,7 +816,8 @@ public:
         cudaThreadSynchronize();
     }
 
-    //
+    /*!
+     */
     void dot_transpose_plus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = 1;
@@ -833,12 +834,17 @@ public:
         cudaThreadSynchronize();
     }
 
+    /*!
+      @brief This returns transposed matrix
+     */
     cuMat transpose(){
         cuMat r(cols_, rows_);
         transpose(r);
         return r;
     }
-    
+
+    /*!
+     */
     void transpose(cuMat &r){
         float alpha = 1;
         float beta = 0;
@@ -868,34 +874,28 @@ public:
         cudaThreadSynchronize();
     }
 
-    void log(cuMat &r, float alpha){
-        mat_log_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
-    }
-
+public:
+    //followiings are methematical functions.
     cuMat log(){
         cuMat r(rows_, cols_);
         log(r, 0.0);
         return r;
     }
-
+    
     cuMat sqrt(){
         cuMat r(rows_, cols_);
         sqrt(r, 1e-8);
         return r;
     }
 
-    void sqrt(cuMat &r, float alpha){
-        mat_sqrt_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
-    }
-
-    cuMat sqrt_d(){
+    /*!
+      @brief This returns d/dx{sqrt(this)}
+      @sa mat_sqrt_d_kernel_exec
+     */
+     cuMat sqrt_d(){
         cuMat r(rows_, cols_);
         sqrt_d(r, 1e-8);
         return r;
-    }
-
-    void sqrt_d(cuMat &r, float alpha){
-        mat_sqrt_d_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
     }
 
     cuMat  sin(){
@@ -904,18 +904,10 @@ public:
         return r;
     }
 
-    void sin(cuMat &r){
-        mat_sin_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
-    }
-
     cuMat cos(){
         cuMat r(rows_, cols_);
         cos(r);
         return r;
-    }
-
-    void cos(cuMat &r){
-        mat_cos_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
     }
 
     cuMat relu(){
@@ -924,8 +916,10 @@ public:
         return r;
     }
 
-    void relu(cuMat &r){
-        relu_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    cuMat prelu(cuMat &a){
+        cuMat r(rows_, cols_);
+        prelu(a, r);
+        return r;
     }
 
     cuMat relu_d(){
@@ -934,39 +928,16 @@ public:
         return r;
     }
 
-    void relu_d(cuMat &r){
-        relu_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
-    }
-
-    cuMat prelu(cuMat &a){
-        cuMat r(rows_, cols_);
-        prelu(a, r);
-        return r;
-    }
-
-    void prelu(cuMat &a, cuMat &r){
-        prelu_kernel_exec(m_device_, a.m_device_, r.m_device_, cols_, rows_);
-    }
-
-
     cuMat prelu_d(cuMat &a, cuMat &da){
         cuMat r(rows_, cols_);
         prelu_d(a, r, da);
         return r;
     }
     
-    void prelu_d(cuMat &a, cuMat &r, cuMat &da){
-        prelu_d_kernel_exec(m_device_, a.m_device_, r.m_device_, da.m_device_, cols_, rows_);
-    }
-
     cuMat sigmoid(){
         cuMat r(rows_, cols_);
         sigmoid(r);
         return r;
-    }
-
-    void sigmoid(cuMat &r){
-        sigmoid_kernel_exec(m_device_, r.m_device_, cols_, rows_);
     }
 
     cuMat sigmoid_d(){
@@ -975,18 +946,10 @@ public:
         return r;;
     }
 
-    void sigmoid_d(cuMat &r){
-        sigmoid_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
-    }
-
     cuMat tanh(){
         cuMat r(rows_, cols_);
         tanh(r);
         return r;
-    }
-
-    void tanh(cuMat &r){
-        tanh_kernel_exec(m_device_, r.m_device_, cols_, rows_);
     }
 
     cuMat tanh_d(){
@@ -995,18 +958,10 @@ public:
         return r;
     }
 
-    void tanh_d(cuMat &r){
-        tanh_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
-    }
-
     cuMat softmax(){
         cuMat r(rows_, cols_);
         softmax(r);
         return r;
-    }
-
-    void softmax(cuMat &r){
-        softmax_kernel_exec(m_device_, r.m_device_, cols_, rows_);
     }
 
     float l2(){
@@ -1028,6 +983,92 @@ public:
     void fill(float a){
         this->ones();
         this->mul(a, *this);
+    }
+
+    /*!
+      @brief This returns elemnentwise exponeintial of *this
+      @sa mat_exp_kernel_exec
+     */
+    cuMat exp(){
+        cuMat r(rows_, cols_);
+        exp(r);
+        return r;
+    }
+
+    /*!
+      @brief This returns a elementwise inverse matrix of *this.
+      @sa mat_inverse_kernel_exec
+    */
+    cuMat inverse(){
+        cuMat r(rows_, cols_);
+        inverse(r);
+        return r;
+    }
+private:
+    //followings are backends of mathematical functions.
+    void log(cuMat &r, float alpha){
+        mat_log_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+    void sqrt(cuMat &r, float alpha){
+        mat_sqrt_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+
+    void sqrt_d(cuMat &r, float alpha){
+        mat_sqrt_d_kernel_exec(m_device_, r.m_device_, cols_, rows_, alpha);
+    }
+
+    void sin(cuMat &r){
+        mat_sin_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
+    }
+
+    void cos(cuMat &r){
+        mat_cos_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0);
+    }
+
+    void relu(cuMat &r){
+        relu_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void relu_d(cuMat &r){
+        relu_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void prelu(cuMat &a, cuMat &r){
+        prelu_kernel_exec(m_device_, a.m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void prelu_d(cuMat &a, cuMat &r, cuMat &da){
+        prelu_d_kernel_exec(m_device_, a.m_device_, r.m_device_, da.m_device_, cols_, rows_);
+    }
+
+    void sigmoid(cuMat &r){
+        sigmoid_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void sigmoid_d(cuMat &r){
+        sigmoid_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void tanh(cuMat &r){
+        tanh_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void tanh_d(cuMat &r){
+        tanh_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void softmax(cuMat &r){
+        softmax_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void exp(cuMat &r){
+        mat_exp_kernel_exec(m_device_, r.m_device_, cols_, rows_, 1e-8);
+    }
+
+    void inverse(cuMat &r){
+        mat_inverse_kernel_exec(m_device_, r.m_device_, cols_, rows_);
     }
 };
 #endif
