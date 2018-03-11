@@ -5,8 +5,8 @@
   @date 3/10
  */
 
-#ifndef CUMAT_H_
-#define CUMAT_H_
+#ifndef CUMAT_HPP_
+#define CUMAT_HPP_
 
 #include "mat_ones_kernel.h"
 #include "mat_mul_elementwise_kernel.h"
