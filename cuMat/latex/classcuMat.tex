@@ -1,0 +1,399 @@
+\hypertarget{classcuMat}{}\section{cu\+Mat Class Reference}
+\label{classcuMat}\index{cu\+Mat@{cu\+Mat}}
+
+
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} is a matrix class with arithmatic operators and fuctions  
+
+
+
+
+{\ttfamily \#include $<$cu\+Mat.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classcuMat_a7708eee2489a568abaeb9e7794130665}\label{classcuMat_a7708eee2489a568abaeb9e7794130665}} 
+int \mbox{\hyperlink{classcuMat_a7708eee2489a568abaeb9e7794130665}{row}} () const
+\begin{DoxyCompactList}\small\item\em This function returns the row number. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a0680edf687da83952a4492327a4e1b2f}\label{classcuMat_a0680edf687da83952a4492327a4e1b2f}} 
+int \mbox{\hyperlink{classcuMat_a0680edf687da83952a4492327a4e1b2f}{col}} () const
+\begin{DoxyCompactList}\small\item\em This function returns the column number. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_aedab273f58ba63771b24b3850ce74fd2}\label{classcuMat_aedab273f58ba63771b24b3850ce74fd2}} 
+\mbox{\hyperlink{classcuMat_aedab273f58ba63771b24b3850ce74fd2}{cu\+Mat}} ()
+\begin{DoxyCompactList}\small\item\em The matrix will initialized to size 0. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_ab618e94a549bf70559e0a4fbc54dd17a}\label{classcuMat_ab618e94a549bf70559e0a4fbc54dd17a}} 
+\mbox{\hyperlink{classcuMat_ab618e94a549bf70559e0a4fbc54dd17a}{cu\+Mat}} (const int rows, const int cols)
+\begin{DoxyCompactList}\small\item\em The matrix will be initialized to the designated size. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classcuMat_a1caa95916affc357b436b09f30f7c234}{cu\+Mat}} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\begin{DoxyCompactList}\small\item\em This is copy constructor. It uses \mbox{\hyperlink{classcuMat_a9029f495582d01345ab6513a670e5222}{new\+\_\+matrix()}} inside. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_aa540003b558fdd97dd5b9f3f96a163fc}\label{classcuMat_aa540003b558fdd97dd5b9f3f96a163fc}} 
+\mbox{\hyperlink{classcuMat_aa540003b558fdd97dd5b9f3f96a163fc}{$\sim$cu\+Mat}} ()
+\begin{DoxyCompactList}\small\item\em This is the destructor. It uses del\+\_\+matrix inside. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a242d2c78e868c92ea3639b58bc1582ac}\label{classcuMat_a242d2c78e868c92ea3639b58bc1582ac}} 
+void \mbox{\hyperlink{classcuMat_a242d2c78e868c92ea3639b58bc1582ac}{mem\+Malloc\+Host}} ()
+\begin{DoxyCompactList}\small\item\em This function malloc memory for host device(main memory) of size \mbox{[}$\ast$this-\/$>$rows\+\_\+\mbox{]}x\mbox{[}$\ast$this-\/$>$cols\+\_\+\mbox{]}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a13b0f57d8796ea59c32112d4a9a33d10}\label{classcuMat_a13b0f57d8796ea59c32112d4a9a33d10}} 
+void \mbox{\hyperlink{classcuMat_a13b0f57d8796ea59c32112d4a9a33d10}{mem\+Malloc\+Device}} ()
+\begin{DoxyCompactList}\small\item\em This funciton malloc memory in device and 0-\/clear. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_a9029f495582d01345ab6513a670e5222}{new\+\_\+matrix}} (const int rows, const int cols)
+\begin{DoxyCompactList}\small\item\em new\+\_\+matrix malloc new memory in device. If the current size of $\ast$this and designated size is different, $\ast$this will be resized. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a76fc37b5688d34d9c5b4f55957b8d8ab}\label{classcuMat_a76fc37b5688d34d9c5b4f55957b8d8ab}} 
+void \mbox{\hyperlink{classcuMat_a76fc37b5688d34d9c5b4f55957b8d8ab}{del\+\_\+matrix}} ()
+\begin{DoxyCompactList}\small\item\em del\+\_\+matrix frees both main memory and device memory. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_ac691515ea837e23fa59e4588ff5e785f}\label{classcuMat_ac691515ea837e23fa59e4588ff5e785f}} 
+void \mbox{\hyperlink{classcuMat_ac691515ea837e23fa59e4588ff5e785f}{mem\+Host\+To\+Device}} ()
+\begin{DoxyCompactList}\small\item\em This function copies host memory to device memory of $\ast$this (Host\+To\+Device). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_ac17e2c321db8ee5c30dc18a470f72a7b}{mem\+Device\+To\+Host}} ()
+\begin{DoxyCompactList}\small\item\em This function copies device memory of $\ast$this to host memory of $\ast$this (Device\+To\+Host) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a549728c7eac063f6ea2cc2667d827b58}\label{classcuMat_a549728c7eac063f6ea2cc2667d827b58}} 
+void \mbox{\hyperlink{classcuMat_a549728c7eac063f6ea2cc2667d827b58}{mem\+Set\+Host}} (int i, int j, const float val)
+\begin{DoxyCompactList}\small\item\em This function set host memory\mbox{[}i\mbox{]}\mbox{[}j\mbox{]} = val. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_aa11b125d69c657dc3c2ab7badc98f589}\label{classcuMat_aa11b125d69c657dc3c2ab7badc98f589}} 
+void \mbox{\hyperlink{classcuMat_aa11b125d69c657dc3c2ab7badc98f589}{mem\+Set\+Host}} (const float $\ast$v)
+\begin{DoxyCompactList}\small\item\em This function copies the host/device array $\ast$v to device\+\_\+memory of $\ast$this (Host\+To\+Device). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_a2a5738cd5f2b52cc3c2c61ae23d564a9}{mem\+Set\+Device}} (const float $\ast$v)
+\begin{DoxyCompactList}\small\item\em This function copies the host/device array $\ast$v to device memory of $\ast$this (Device\+To\+Device) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_a7fe8fea4726b3f0a8c0112337eb5986b}{mem\+Set\+Device\+Row}} (const float $\ast$v, int row\+\_\+index)
+\begin{DoxyCompactList}\small\item\em This function copies array v to the row of row\+\_\+index (Device\+To\+Device) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_a2b11cfd9edbe5c5af48fca3361da036e}{mem\+Set\+Device\+Col}} (const float $\ast$v, int col\+\_\+index)
+\begin{DoxyCompactList}\small\item\em This function copies array v to the column of col\+\_\+index (Device\+To\+Device). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classcuMat_a53d2015ea19cc77b0bc19f3b3251940a}{to\+Host\+Array}} ()
+\begin{DoxyCompactList}\small\item\em This function copies the device memory to host array(std\+::vector$<$float$>$ m\+\_\+host\+\_\+array) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_ac3dc0a7af59174aa8b1411d47866d404}\label{classcuMat_ac3dc0a7af59174aa8b1411d47866d404}} 
+void \mbox{\hyperlink{classcuMat_ac3dc0a7af59174aa8b1411d47866d404}{from\+Host\+Array}} ()
+\begin{DoxyCompactList}\small\item\em This function copies host array to device memory. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a3547edb6de42467f76764a35bcdecf76}\label{classcuMat_a3547edb6de42467f76764a35bcdecf76}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries slice\+Rows} (int offset, int len)
+\item 
+\mbox{\Hypertarget{classcuMat_abd39b0fe8f69f743775f760c97167c88}\label{classcuMat_abd39b0fe8f69f743775f760c97167c88}} 
+void {\bfseries join\+Rows} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, int offset, int len)
+\item 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& \mbox{\hyperlink{classcuMat_abbcf9b2dcc4062941b5f7727f4ac37fb}{operator=}} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\begin{DoxyCompactList}\small\item\em This is the substition constructor($<$=$>$ copy constructor). Copies device memory of a to that of $\ast$this. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classcuMat_a52ee337354d10e2991f214aff8977824}{operator()}} (const int i, const int j)
+\begin{DoxyCompactList}\small\item\em This returns the current value of device memroy by copying device memory to host memory with mem\+Device\+To\+Host. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classcuMat_a5f3ed1974e037253edf41119b72965a5}\label{classcuMat_a5f3ed1974e037253edf41119b72965a5}} 
+void {\bfseries copy} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\item 
+\mbox{\Hypertarget{classcuMat_a68d74135c0482c5c3bd9ef0f936e34c9}\label{classcuMat_a68d74135c0482c5c3bd9ef0f936e34c9}} 
+void {\bfseries ones} ()
+\item 
+\mbox{\Hypertarget{classcuMat_a667b0eded8ba2738b8cd788a8df4140a}\label{classcuMat_a667b0eded8ba2738b8cd788a8df4140a}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator+=} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\item 
+\mbox{\Hypertarget{classcuMat_ae27474a7b96846439f494d696773e15c}\label{classcuMat_ae27474a7b96846439f494d696773e15c}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator+=} (const float a)
+\item 
+\mbox{\Hypertarget{classcuMat_a6e9e9499edde4954e2f9e26dc9389ccc}\label{classcuMat_a6e9e9499edde4954e2f9e26dc9389ccc}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator-\/=} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_abbd47d837cb067bced0ef042f23f50d5}\label{classcuMat_abbd47d837cb067bced0ef042f23f50d5}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator-\/=} (const float b)
+\item 
+\mbox{\Hypertarget{classcuMat_ad1f1146ebc4d065e12e8cbe1aabdbe07}\label{classcuMat_ad1f1146ebc4d065e12e8cbe1aabdbe07}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator$\ast$=} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\item 
+\mbox{\Hypertarget{classcuMat_a84801424e221687c12e674a7810eddae}\label{classcuMat_a84801424e221687c12e674a7810eddae}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} \& {\bfseries operator$\ast$=} (const float a)
+\item 
+\mbox{\Hypertarget{classcuMat_ae8cb5fe7a8ced5d291286d96afa69352}\label{classcuMat_ae8cb5fe7a8ced5d291286d96afa69352}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries dot} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_ad599cffb1db479d5b5e6680037c5bb28}\label{classcuMat_ad599cffb1db479d5b5e6680037c5bb28}} 
+void {\bfseries dot} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_ac903f062064bf0a72817b08052fe039b}\label{classcuMat_ac903f062064bf0a72817b08052fe039b}} 
+void {\bfseries dot\+\_\+plus} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a83c9065ea81766b36e487a8248f97b3c}\label{classcuMat_a83c9065ea81766b36e487a8248f97b3c}} 
+void {\bfseries transpose\+\_\+dot\+\_\+plus} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_ad57413e2e6b7003372df1e57651e07cf}\label{classcuMat_ad57413e2e6b7003372df1e57651e07cf}} 
+void {\bfseries dot\+\_\+transpose\+\_\+plus} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a9c672e0bd2c35f1fe4ac87e2b5906cf1}\label{classcuMat_a9c672e0bd2c35f1fe4ac87e2b5906cf1}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries transpose} ()
+\item 
+\mbox{\Hypertarget{classcuMat_af18bcf7a8b627c9dbd69ebf52177c4b8}\label{classcuMat_af18bcf7a8b627c9dbd69ebf52177c4b8}} 
+void {\bfseries transpose} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a8b7c00520a2c174c5e5017c42e60d264}\label{classcuMat_a8b7c00520a2c174c5e5017c42e60d264}} 
+void {\bfseries plus\+\_\+util} (float alpha, float beta, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a059b9130f833b2d18fb7da5caac04376}\label{classcuMat_a059b9130f833b2d18fb7da5caac04376}} 
+void {\bfseries log} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r, float alpha)
+\item 
+\mbox{\Hypertarget{classcuMat_a1407cf01332386a714e98d6124503aac}\label{classcuMat_a1407cf01332386a714e98d6124503aac}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries log} ()
+\item 
+\mbox{\Hypertarget{classcuMat_a436480b335debb4831fd93d071f5dde6}\label{classcuMat_a436480b335debb4831fd93d071f5dde6}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries sqrt} ()
+\item 
+\mbox{\Hypertarget{classcuMat_ac2851f60a7f5510c954db6f3cb332200}\label{classcuMat_ac2851f60a7f5510c954db6f3cb332200}} 
+void {\bfseries sqrt} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r, float alpha)
+\item 
+\mbox{\Hypertarget{classcuMat_a662acda2f93bc8495137fdab3ddf3def}\label{classcuMat_a662acda2f93bc8495137fdab3ddf3def}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries sqrt\+\_\+d} ()
+\item 
+\mbox{\Hypertarget{classcuMat_ae8e40250b9bb27bc61734147562f8931}\label{classcuMat_ae8e40250b9bb27bc61734147562f8931}} 
+void {\bfseries sqrt\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r, float alpha)
+\item 
+\mbox{\Hypertarget{classcuMat_aaf4c738be46108eda5e8dd0e366ad558}\label{classcuMat_aaf4c738be46108eda5e8dd0e366ad558}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries sin} ()
+\item 
+\mbox{\Hypertarget{classcuMat_acf4bc9e0bd618e1eee6adb6a71cb5eb0}\label{classcuMat_acf4bc9e0bd618e1eee6adb6a71cb5eb0}} 
+void {\bfseries sin} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_acd8a9cb21adefd0474e5abfc4f23a5be}\label{classcuMat_acd8a9cb21adefd0474e5abfc4f23a5be}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries cos} ()
+\item 
+\mbox{\Hypertarget{classcuMat_ab063a7e67eda9e94eccc790a352f97fd}\label{classcuMat_ab063a7e67eda9e94eccc790a352f97fd}} 
+void {\bfseries cos} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a68c274726e41f2f6ae73846ce4ddc5d2}\label{classcuMat_a68c274726e41f2f6ae73846ce4ddc5d2}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries relu} ()
+\item 
+\mbox{\Hypertarget{classcuMat_af26245ee55e5b69f57b670bc1f7f00ef}\label{classcuMat_af26245ee55e5b69f57b670bc1f7f00ef}} 
+void {\bfseries relu} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_aa91feaab962dbc3b4bd7623bb06b8aef}\label{classcuMat_aa91feaab962dbc3b4bd7623bb06b8aef}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries relu\+\_\+d} ()
+\item 
+\mbox{\Hypertarget{classcuMat_aab11509fe9ac255fced45363e264e4bf}\label{classcuMat_aab11509fe9ac255fced45363e264e4bf}} 
+void {\bfseries relu\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_afe938d720e81b7f847bd274463e5b9c4}\label{classcuMat_afe938d720e81b7f847bd274463e5b9c4}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries prelu} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\item 
+\mbox{\Hypertarget{classcuMat_a19612852a27ae9c3eb204f28f989065d}\label{classcuMat_a19612852a27ae9c3eb204f28f989065d}} 
+void {\bfseries prelu} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_ace63ad02b3d4e4c6308a15680809299d}\label{classcuMat_ace63ad02b3d4e4c6308a15680809299d}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries prelu\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&da)
+\item 
+\mbox{\Hypertarget{classcuMat_ad07756ce28f73fd3298171ce67fede94}\label{classcuMat_ad07756ce28f73fd3298171ce67fede94}} 
+void {\bfseries prelu\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&da)
+\item 
+\mbox{\Hypertarget{classcuMat_a259b3d76fe6f532e1ff0fbf6e1dc7c39}\label{classcuMat_a259b3d76fe6f532e1ff0fbf6e1dc7c39}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries sigmoid} ()
+\item 
+\mbox{\Hypertarget{classcuMat_ab942134262cd23c3d8a4de6be52c48b4}\label{classcuMat_ab942134262cd23c3d8a4de6be52c48b4}} 
+void {\bfseries sigmoid} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_aec68bf45e13bd9696388b9645cd5514f}\label{classcuMat_aec68bf45e13bd9696388b9645cd5514f}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries sigmoid\+\_\+d} ()
+\item 
+\mbox{\Hypertarget{classcuMat_aff8346440fbb6e08a4403623eb48fee6}\label{classcuMat_aff8346440fbb6e08a4403623eb48fee6}} 
+void {\bfseries sigmoid\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a4810d9d55afb758d7e73ac2ff87bdf67}\label{classcuMat_a4810d9d55afb758d7e73ac2ff87bdf67}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries tanh} ()
+\item 
+\mbox{\Hypertarget{classcuMat_a2963d3fcdedce6daeea48f7797e6adbb}\label{classcuMat_a2963d3fcdedce6daeea48f7797e6adbb}} 
+void {\bfseries tanh} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a6d6afcc92439695d860aa0cbb54fd934}\label{classcuMat_a6d6afcc92439695d860aa0cbb54fd934}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries tanh\+\_\+d} ()
+\item 
+\mbox{\Hypertarget{classcuMat_ab169a306ef42a1eb0eafa2e1b8164a12}\label{classcuMat_ab169a306ef42a1eb0eafa2e1b8164a12}} 
+void {\bfseries tanh\+\_\+d} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_a30cf7af2e09c7cabaef717e6fb4e52bf}\label{classcuMat_a30cf7af2e09c7cabaef717e6fb4e52bf}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries softmax} ()
+\item 
+\mbox{\Hypertarget{classcuMat_a2b14f9347c9ed111ad4a03e3a621a217}\label{classcuMat_a2b14f9347c9ed111ad4a03e3a621a217}} 
+void {\bfseries softmax} (\mbox{\hyperlink{classcuMat}{cu\+Mat}} \&r)
+\item 
+\mbox{\Hypertarget{classcuMat_ade7939a418dfe1535b93f263cff993ab}\label{classcuMat_ade7939a418dfe1535b93f263cff993ab}} 
+float {\bfseries l2} ()
+\item 
+\mbox{\Hypertarget{classcuMat_a0ff2196ee2fadea47a826ca80ab2b8f1}\label{classcuMat_a0ff2196ee2fadea47a826ca80ab2b8f1}} 
+void {\bfseries fill} (float a)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classcuMat_ac98d07dd8f7b70e16ccb9a01abf56b9c}\label{classcuMat_ac98d07dd8f7b70e16ccb9a01abf56b9c}} 
+class {\bfseries boost\+::serialization\+::access}
+\item 
+\mbox{\Hypertarget{classcuMat_a137bdd4d1be179ce52c9d2231d1eb2bf}\label{classcuMat_a137bdd4d1be179ce52c9d2231d1eb2bf}} 
+void {\bfseries print\+Rows} (std\+::ostream \&output, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, int i)
+\item 
+\mbox{\Hypertarget{classcuMat_a3fc62e3d7f93325eb6a3ddd04729eeff}\label{classcuMat_a3fc62e3d7f93325eb6a3ddd04729eeff}} 
+std\+::ostream \& {\bfseries operator$<$$<$} (std\+::ostream \&output, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a)
+\item 
+\mbox{\Hypertarget{classcuMat_a62ab5b9219f978d4cb122f77c258bff5}\label{classcuMat_a62ab5b9219f978d4cb122f77c258bff5}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator+} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_a2a9c317b4008986235427a101464d318}\label{classcuMat_a2a9c317b4008986235427a101464d318}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator+} (const float a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_a1d4b683ad0d961226cc140fc78b7bdb8}\label{classcuMat_a1d4b683ad0d961226cc140fc78b7bdb8}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator+} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const float b)
+\item 
+\mbox{\Hypertarget{classcuMat_a521a116b3ec729502947f94ff3821751}\label{classcuMat_a521a116b3ec729502947f94ff3821751}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator-\/} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_a9a1fd27e3fb24a8e181f7e6b3cf365a4}\label{classcuMat_a9a1fd27e3fb24a8e181f7e6b3cf365a4}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator$\ast$} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_ac3480f12a960470d00de7d0467b88ca2}\label{classcuMat_ac3480f12a960470d00de7d0467b88ca2}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator$\ast$} (const float a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_a534c5f3d18c9be5ff8ba90b22ce53ee5}\label{classcuMat_a534c5f3d18c9be5ff8ba90b22ce53ee5}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator$\ast$} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const float b)
+\item 
+\mbox{\Hypertarget{classcuMat_a772896eae6bbd209b056240c8005abad}\label{classcuMat_a772896eae6bbd209b056240c8005abad}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator/} (float p, \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\item 
+\mbox{\Hypertarget{classcuMat_acd9fef1d6f48bc0fa0bbea2a979ec712}\label{classcuMat_acd9fef1d6f48bc0fa0bbea2a979ec712}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator/} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, float b)
+\item 
+\mbox{\Hypertarget{classcuMat_a86e03dc28a9393174e44eea2eba2a693}\label{classcuMat_a86e03dc28a9393174e44eea2eba2a693}} 
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} {\bfseries operator/} (const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&a, const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\mbox{\hyperlink{classcuMat}{cu\+Mat}} is a matrix class with arithmatic operators and fuctions 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classcuMat_a1caa95916affc357b436b09f30f7c234}\label{classcuMat_a1caa95916affc357b436b09f30f7c234}} 
+\index{cu\+Mat@{cu\+Mat}!cu\+Mat@{cu\+Mat}}
+\index{cu\+Mat@{cu\+Mat}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{cu\+Mat()}{cuMat()}}
+{\footnotesize\ttfamily cu\+Mat\+::cu\+Mat (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&}]{a }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This is copy constructor. It uses \mbox{\hyperlink{classcuMat_a9029f495582d01345ab6513a670e5222}{new\+\_\+matrix()}} inside. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classcuMat_a9029f495582d01345ab6513a670e5222}{new\+\_\+matrix}} 
+\end{DoxySeeAlso}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classcuMat_ac17e2c321db8ee5c30dc18a470f72a7b}\label{classcuMat_ac17e2c321db8ee5c30dc18a470f72a7b}} 
+\index{cu\+Mat@{cu\+Mat}!mem\+Device\+To\+Host@{mem\+Device\+To\+Host}}
+\index{mem\+Device\+To\+Host@{mem\+Device\+To\+Host}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{mem\+Device\+To\+Host()}{memDeviceToHost()}}
+{\footnotesize\ttfamily void cu\+Mat\+::mem\+Device\+To\+Host (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This function copies device memory of $\ast$this to host memory of $\ast$this (Device\+To\+Host) 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classcuMat_a242d2c78e868c92ea3639b58bc1582ac}{mem\+Malloc\+Host}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classcuMat_a2a5738cd5f2b52cc3c2c61ae23d564a9}\label{classcuMat_a2a5738cd5f2b52cc3c2c61ae23d564a9}} 
+\index{cu\+Mat@{cu\+Mat}!mem\+Set\+Device@{mem\+Set\+Device}}
+\index{mem\+Set\+Device@{mem\+Set\+Device}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{mem\+Set\+Device()}{memSetDevice()}}
+{\footnotesize\ttfamily void cu\+Mat\+::mem\+Set\+Device (\begin{DoxyParamCaption}\item[{const float $\ast$}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This function copies the host/device array $\ast$v to device memory of $\ast$this (Device\+To\+Device) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em float} & $\ast$v This is the src array to copy to device memory \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcuMat_a2b11cfd9edbe5c5af48fca3361da036e}\label{classcuMat_a2b11cfd9edbe5c5af48fca3361da036e}} 
+\index{cu\+Mat@{cu\+Mat}!mem\+Set\+Device\+Col@{mem\+Set\+Device\+Col}}
+\index{mem\+Set\+Device\+Col@{mem\+Set\+Device\+Col}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{mem\+Set\+Device\+Col()}{memSetDeviceCol()}}
+{\footnotesize\ttfamily void cu\+Mat\+::mem\+Set\+Device\+Col (\begin{DoxyParamCaption}\item[{const float $\ast$}]{v,  }\item[{int}]{col\+\_\+index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This function copies array v to the column of col\+\_\+index (Device\+To\+Device). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & This is the src array. \\
+\hline
+{\em col\+\_\+index} & This is the index of column \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcuMat_a7fe8fea4726b3f0a8c0112337eb5986b}\label{classcuMat_a7fe8fea4726b3f0a8c0112337eb5986b}} 
+\index{cu\+Mat@{cu\+Mat}!mem\+Set\+Device\+Row@{mem\+Set\+Device\+Row}}
+\index{mem\+Set\+Device\+Row@{mem\+Set\+Device\+Row}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{mem\+Set\+Device\+Row()}{memSetDeviceRow()}}
+{\footnotesize\ttfamily void cu\+Mat\+::mem\+Set\+Device\+Row (\begin{DoxyParamCaption}\item[{const float $\ast$}]{v,  }\item[{int}]{row\+\_\+index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This function copies array v to the row of row\+\_\+index (Device\+To\+Device) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & This is the src array \\
+\hline
+{\em row\+\_\+index} & This is the index of column \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcuMat_a9029f495582d01345ab6513a670e5222}\label{classcuMat_a9029f495582d01345ab6513a670e5222}} 
+\index{cu\+Mat@{cu\+Mat}!new\+\_\+matrix@{new\+\_\+matrix}}
+\index{new\+\_\+matrix@{new\+\_\+matrix}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{new\+\_\+matrix()}{new\_matrix()}}
+{\footnotesize\ttfamily void cu\+Mat\+::new\+\_\+matrix (\begin{DoxyParamCaption}\item[{const int}]{rows,  }\item[{const int}]{cols }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+new\+\_\+matrix malloc new memory in device. If the current size of $\ast$this and designated size is different, $\ast$this will be resized. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classcuMat_a76fc37b5688d34d9c5b4f55957b8d8ab}{del\+\_\+matrix}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classcuMat_a52ee337354d10e2991f214aff8977824}\label{classcuMat_a52ee337354d10e2991f214aff8977824}} 
+\index{cu\+Mat@{cu\+Mat}!operator()@{operator()}}
+\index{operator()@{operator()}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily float cu\+Mat\+::operator() (\begin{DoxyParamCaption}\item[{const int}]{i,  }\item[{const int}]{j }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This returns the current value of device memroy by copying device memory to host memory with mem\+Device\+To\+Host. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classcuMat_ac17e2c321db8ee5c30dc18a470f72a7b}{mem\+Device\+To\+Host}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classcuMat_abbcf9b2dcc4062941b5f7727f4ac37fb}\label{classcuMat_abbcf9b2dcc4062941b5f7727f4ac37fb}} 
+\index{cu\+Mat@{cu\+Mat}!operator=@{operator=}}
+\index{operator=@{operator=}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classcuMat}{cu\+Mat}}\& cu\+Mat\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classcuMat}{cu\+Mat}} \&}]{a }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This is the substition constructor($<$=$>$ copy constructor). Copies device memory of a to that of $\ast$this. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & This is the rvalue of operator= \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classcuMat_a53d2015ea19cc77b0bc19f3b3251940a}\label{classcuMat_a53d2015ea19cc77b0bc19f3b3251940a}} 
+\index{cu\+Mat@{cu\+Mat}!to\+Host\+Array@{to\+Host\+Array}}
+\index{to\+Host\+Array@{to\+Host\+Array}!cu\+Mat@{cu\+Mat}}
+\subsubsection{\texorpdfstring{to\+Host\+Array()}{toHostArray()}}
+{\footnotesize\ttfamily void cu\+Mat\+::to\+Host\+Array (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+This function copies the device memory to host array(std\+::vector$<$float$>$ m\+\_\+host\+\_\+array) 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classcuMat_a242d2c78e868c92ea3639b58bc1582ac}{mem\+Malloc\+Host}} 
+
+\mbox{\hyperlink{classcuMat_ac17e2c321db8ee5c30dc18a470f72a7b}{mem\+Device\+To\+Host}} 
+\end{DoxySeeAlso}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{cuMat_8h}{cu\+Mat.\+h}}\end{DoxyCompactItemize}

@@ -6,3 +6,5 @@ cuMat/cmake_install.cmake
 cuMat/libcumat.so
 cuMat/memo.txt
 cuMat/latex
+cuMat/Doxyfile
+cuMat/Doxyfile.bak
