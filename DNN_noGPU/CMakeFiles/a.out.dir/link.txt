@@ -1,1 +1,0 @@
-/usr/bin/c++   -Wall -Wextra -g   CMakeFiles/a.out.dir/function.cc.o  -o a.out -rdynamic 

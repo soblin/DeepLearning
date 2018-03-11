@@ -1,3 +1,12 @@
+/*!
+  @file cuMat.h
+  @brief header file for libcumat.so
+  @author soblin
+  @date 3/10
+ */
+
+//cudaMemcpy(dst, src, size, flag)
+
 #ifndef CUMAT_H_
 #define CUMAT_H_
 
@@ -35,6 +44,12 @@
 #include "/usr/local/cuda-9.1/include/cublas_v2.h"
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
+/*!
+   @brief convert 2D-index to 1D-array index(column major)
+   @param (i) rows
+   @param (j) cols
+   @return j * width_of_row + i
+ */
 inline int IDX2F(int i, int j, int ld){
     return j * ld + i;
 }
@@ -47,14 +62,6 @@ inline void FatalError(std::string s){
     cudaDeviceReset();
     exit(EXIT_FAILURE);
 }
-
-// inline void checkCUDNN(int  status){
-//     std::stringstream _error;
-//     if(status != CUDNN_STATUS_SUCCESS){
-// 	_error << "CUDNN failure\nError:" << cudnnGetErrorString(status);
-// 	FatalError(_error.str());
-//     }
-// }
 
 inline void checkCublasErrors(int status){
     std::stringstream _error;
@@ -75,6 +82,10 @@ public:
 
 extern MallocCounter mallocCounter;
 
+/*! 
+  @class cuMat
+  @brief cuMat is a matrix class with arithmatic operators and fuctions
+ */
 class cuMat{
 private:
     friend class boost::serialization::access;
@@ -94,29 +105,40 @@ private:
     
 public:
 
-    //accesser
+    /*!
+      @brief This function returns the row number.
+     */
     inline int row() const { return rows_; }
-    
+
+    /*!
+      @brief This function returns the column number.
+     */
     inline int col() const { return cols_; }
 
-    //    inline float* m_device_ const { return m_device_; }
 
-    //    inline float *m_host_ const { return m_host_;}
-
-    //    inline cublasHandle_t cuda_handle_ const { return cuda_handle_;}
-    
+    /*!
+      @brief The matrix will initialized to size 0.
+     */
     cuMat(){
         rows_ = cols_ = 0;
         cublasCreate(&cuda_handle_);
         cudaThreadSynchronize();
     }
 
+    /*!
+      @brief The matrix will be initialized to the designated size
+     */
     cuMat(const int rows, const int cols){
         cublasCreate(&cuda_handle_);
         cudaThreadSynchronize();
         new_matrix(rows, cols);
     }
 
+
+    /*!
+      @brief This is copy constructor. It uses new_matrix() inside.
+      @sa new_matrix 
+     */
     cuMat(const cuMat &a){
         cublasCreate(&cuda_handle_);
         cudaThreadSynchronize();
@@ -129,11 +151,17 @@ public:
         if(error != cudaSuccess) FatalError("cuMat copy constructer failed");
     }
 
+    /*!
+      @brief This is the destructor. It uses del_matrix inside.
+     */
     ~cuMat(){
         del_matrix();
         cublasDestroy(cuda_handle_);
     }
 
+    /*!
+      @brief This function malloc memory for host device(main memory) of size [*this->rows_]x[*this->cols_]
+     */
     void memMallocHost(){
         m_host_ = (float*)malloc(rows_*cols_*sizeof(*m_host_));
         for(int i=0; i<rows_; i++){
@@ -143,13 +171,20 @@ public:
         }
     }
 
+    /*!
+      @brief This funciton malloc memory in device and 0-clear
+     */
     void memMallocDevice(){
         cudaError_t error = cudaMalloc((void**)&m_device_, rows_*cols_*sizeof(*m_device_));
         if(error != cudaSuccess) FatalError("memMallocDevice failed\n");
         cudaMemset(m_device_, 0x00, rows_*cols_*sizeof(*m_device_));
         cudaThreadSynchronize();
     }
-    
+
+    /*!
+      @brief new_matrix malloc new memory in device. If the current size of *this and designated size is different, *this will be resized. 
+      @sa del_matrix
+     */
     void new_matrix(const int rows, const int cols){
         //サイズが違う場合はリサイズ
         if(this->rows_ != rows || this->cols_ != cols){
@@ -167,6 +202,10 @@ public:
         }
     }
 
+    /*!
+      @brief del_matrix frees both main memory and device memory.
+     */
+    
     void del_matrix(){
         if(m_device_ != nullptr){
             cudaFree(m_device_);
@@ -180,51 +219,85 @@ public:
         cudaThreadSynchronize();
     }
 
+    /*!
+      @brief This function copies host memory to device memory of *this (HostToDevice).
+     */
     void memHostToDevice(){
-        cudaError_t error = cudaMemcpy(m_device_, m_host_, rows_*cols_*sizeof(*m_device_),
+        cudaError_t error = cudaMemcpy(m_device_/*dst*/, m_host_/*src*/, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyHostToDevice);
         if(error != cudaSuccess) FatalError("memHostToDevice failed\n");
     }
 
+    /*!
+      @brief This function copies device memory of *this to host memory of *this (DeviceToHost)
+      @sa memMallocHost
+     */
     void memDeviceToHost(){
         if(m_host_ == nullptr) this->memMallocHost();
-        cudaError_t error = cudaMemcpy(m_host_, m_device_, rows_*cols_*sizeof(*m_device_),
+        cudaError_t error = cudaMemcpy(m_host_/*dst*/, m_device_/*src*/, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyDeviceToHost);
         if(error != cudaSuccess) FatalError("memDevicetoHost faield\n");
     }
 
-    void memSetHost(int i, int j, float val){
+    /*!
+      @brief This function set host memory[i][j] = val
+     */
+    void memSetHost(int i, int j, const float val){
         if(m_host_ == nullptr) this->memMallocHost();
         m_host_[IDX2F(i, j, rows_)] = val;
     }
-    
-    void memSetHost(float *v){
+
+    /*!
+      @brief This function copies the host/device array *v to device_memory of *this (HostToDevice).
+    */
+    void memSetHost(const float *v){
         if(m_host_ == nullptr) this->memMallocHost();
-        if(m_device_ == nullptr) FatalError("memSetHost m_device_ is nullptr");
-
-        cudaError_t error = cudaMemcpy(m_device_, v, rows_*cols_*sizeof(m_device_),
+        if(m_device_ == nullptr){
+            std::cout << "memSetHost m_device_ is nullptr" << std::endl;
+        }
+        cudaError_t error = cudaMemcpy(m_device_/*dst*/, v/*src*/, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyHostToDevice);
-        if(error != cudaSuccess) FatalError("memSetHost(float *v) failed\n");
-    }
-
-    void memSetDevice(float *v){
-        cudaError_t error = cudaMemcpy(m_device_, v, rows_*cols_*sizeof(*m_device_),
-                                       cudaMemcpyDeviceToHost);
         if(error != cudaSuccess) FatalError("memSetDevice(float *v) failed\n");
     }
 
-    void memSetDeviceRow(float *v, int row_index){
+    /*!
+      @brief This function copies the host/device array *v to device memory of *this (DeviceToDevice)
+      @param float *v This is the src array to copy to device memory
+     */
+    void memSetDevice(const float *v){
+        cudaError_t error = cudaMemcpy(m_device_/*dst*/, v/*src*/, rows_*cols_*sizeof(m_device_),
+                                       cudaMemcpyDeviceToDevice);
+        if(error != cudaSuccess) FatalError("memSetHost(float *v) failed\n");
+    }
+
+
+    /*!
+      @brief This function copies array v to the row of row_index (DeviceToDevice)
+      @param v This is the src array
+      @param row_index This is the index of column
+     */
+    void memSetDeviceRow(const float *v, int row_index){
         cudaError_t error = cudaMemcpy(m_device_ + row_index*cols_, v, cols_*sizeof(float),
                                        cudaMemcpyDeviceToDevice);
         if(error != cudaSuccess) FatalError("memSetDeviceRow failed\n");
     }
 
-    void memSetDeviceCol(float *v, int col_index){
+    /*!
+      @brief This function copies array v to the column of col_index (DeviceToDevice).
+      @param v This is the src array.
+      @param col_index This is the index of column
+     */
+    void memSetDeviceCol(const float *v, int col_index){
         cudaError_t error = cudaMemcpy(m_device_ + col_index*rows_, v, rows_*cols_*sizeof(float),
                                        cudaMemcpyDeviceToDevice);
         if(error != cudaSuccess) FatalError("memSetDeviceCol failed\n");
     }
 
+    /*!
+      @brief This function copies the device memory to host array(std::vector<float> m_host_array)
+      @sa memMallocHost
+      @sa memDeviceToHost
+     */
     void toHostArray(){
         if(m_host_ == nullptr) this->memMallocHost();
         memDeviceToHost();
@@ -237,6 +310,9 @@ public:
         }
     }
 
+    /*!
+      @brief This function copies host array to device memory.
+     */
     void fromHostArray(){
         if(m_host_ == nullptr) this->memMallocHost();
         if(m_device_ == nullptr) this->memMallocDevice();
@@ -261,15 +337,23 @@ public:
         join_rows_kernel_exec(a.m_device_, m_device_, cols_, rows_, offset, len);
     }
 
+    /*!
+      @brief This is the substition constructor(<=> copy constructor). Copies device memory of a to that of *this.
+      @param a This is the rvalue of operator=
+     */
     cuMat &operator=(const cuMat &a){
         new_matrix(a.rows_, a.cols_);
-        cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(*m_device_),
+        cudaError_t error = cudaMemcpy(m_device_/*dst*/, a.m_device_/*src*/, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyDeviceToDevice);
         if(error != cudaSuccess) FatalError("cuMat operator=(const cuMat &) failed\n");
 
         return *this;
     }
-    
+
+    /*!
+      @brief This returns the current value of device memroy by copying device memory to host memory with memDeviceToHost.
+      @sa memDeviceToHost
+     */
     float operator()(const int i, const int j){
         if(m_host_ == nullptr){
             this->memMallocHost();
@@ -278,6 +362,9 @@ public:
         return m_host_[IDX2F(i, j, rows_)];
     }
 
+    /*!
+      @brief This function displays the i-th row of *this. If the column is ls leq10, print all. Else print only the 2elements from both start and end.
+     */
     friend void printRows(std::ostream &output, const cuMat &a, int i){
         output << "[";
         if(a.cols_ < 11){
@@ -291,6 +378,9 @@ public:
         output << "]";
     }
 
+    /*!
+      @brief This function prints the matrix. If the size is smaller than 11x11, print all.
+     */
     friend std::ostream &operator<<(std::ostream &output, cuMat &a){
         if(a.m_device_ == nullptr){
             FatalError("m_device_ is nullptr so cannot <<");
@@ -299,7 +389,7 @@ public:
             FatalError("m_host_ is nullptr so cannot <<");
         }
 
-        cudaError_t error = cudaMemcpy(a.m_host_, a.m_device_, a.rows_*a.cols_*sizeof(*m_device_), cudaMemcpyDeviceToHost);
+        cudaError_t error = cudaMemcpy(a.m_host_/*dst*/, a.m_device_/*src*/, a.rows_*a.cols_*sizeof(*m_device_), cudaMemcpyDeviceToHost);
         if(error != cudaSuccess){
             FatalError("cudaMemcpy failed in <<");
         }
@@ -322,7 +412,7 @@ public:
             for(int i=a.rows_-5; i<a.rows_; i++){
                 printRows(output, a, i);
                 if(i != a.rows_-1) output << std::endl;
-                else{ output << "]\n";}
+                else{ output << "]" << std::endl;}
             }
         }
         return output;
@@ -333,33 +423,52 @@ public:
       operator/ ... same as div
     */
 
+    /*!
+      @brief This function copies device memory of a to that of this.
+     */
     void copy(const cuMat &a){
         if(rows_ != a.rows_ || cols_ != a.cols_){
             FatalError("the size doesnot match in copy.");
         }
-        cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(*m_device_),
+        cudaError_t error = cudaMemcpy(m_device_/*dst*/, a.m_device_/*src*/, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyDeviceToDevice);
         if(error != cudaSuccess) FatalError("cudaMemcpy failed in copy");
     }
 
+    /*!
+      @brief This function sets all the elements of *this to 1.
+      @sa mat_ones_kernel_exec
+     */
     void ones(){
         mat_ones_kernel_exec(m_device_, m_device_, cols_, rows_);
     }
 
+    /*!
+      @brief This is the addition of matrix.
+      @sa plus
+     */
     friend cuMat operator+(const cuMat &a, const cuMat &b){
-        cuMat r = a;
+        cuMat r = a; //copy constructor.
         r.plus(b, r);
 
         return r;
     }
 
+    /*!
+      @brief This is the addition of matrix and real number. Each element is added by a
+      @sa plus
+     */
     friend cuMat operator+(const float a, const cuMat &b){
         cuMat r = b;
         r.plus(a, r);
 
         return r;
     }
-
+    
+    /*!
+      @brief This is the addition of matrix and real number. Each element is added by a
+      @sa plus
+     */
     friend cuMat operator+(const cuMat &a, const float b){
         cuMat r = a;
         r.plus(a, r);
@@ -367,6 +476,10 @@ public:
         return r;
     }
 
+    /*!
+      @brief This is the subtraction of matrix.
+      @sa minus
+     */
     friend cuMat operator-(const cuMat &a, const cuMat &b){
         cuMat r = a;
         //r <= r(==a) - b
@@ -375,7 +488,11 @@ public:
         return r;
     }
 
-    //elementwise!!!
+    /*!
+      @brief This is the elemnetwise product of matrix. Please notice.
+      @sa mul
+      @sa dot
+     */
     friend cuMat operator*(const cuMat &a, const cuMat &b){
         cuMat r = a;
         r.mul(b, r);
@@ -383,6 +500,10 @@ public:
         return r;
     }
 
+    /*!
+      @brief This operator returns a matrix that is multiplied real number to all element of matrix.
+      @sa mul
+     */
     friend cuMat operator*(const float a, const cuMat &b){
         cuMat r = b;
         r.mul(a, r);
@@ -390,6 +511,10 @@ public:
         return r;
     }
 
+    /*!
+      @brief This operator returns a matrix that is multiplied real number to all element of matrix.
+      @sa mul
+     */
     friend cuMat operator*(const cuMat &a, const float b){
         cuMat r = a;
         r.mul(b, r);
@@ -397,6 +522,9 @@ public:
         return r;
     }
 
+    /*!
+      @brief This operator returns a matrix that is multiplied 1/real number to a matrix.
+     */
     friend cuMat operator/(float p, cuMat &b){
         cuMat r = b;
         b.div(p, r);
@@ -404,13 +532,19 @@ public:
         return r;
     }
 
+    /*!
+      @brief This operator returns a matrix that is multiplied 1/real number to a matrix.
+     */
     friend cuMat operator/(const cuMat &a, float b){
         cuMat r = a;
         r.mul(1.0/b, r);
 
         return r;
     }
-    
+
+    /*!
+      @brief This is the elemnetwise division of matricies.
+     */
     friend cuMat operator/(const cuMat &a, const cuMat &b){
         cuMat r = a;
         r.div(b, r);
@@ -459,7 +593,9 @@ private:
       div ... cuMat * (1 / float)
     */
 
-    //r[i][j] <- this[i][j] + b
+    /*!
+      @brief This function calculates r[i][j] <= this[i][j] + b[i][j]
+     */
     void plus(const cuMat &b, cuMat &r){
         float alpha = 1, beta = 1;
         cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
@@ -478,6 +614,9 @@ private:
     }
 
     //r[i][j] <- this[i][j] + beta
+    /*!
+      @brief This function calculates r[i][j] <= this[i][j] + beta
+     */
     void plus(const float beta, cuMat &r){
         cuMat i(rows_, cols_);
         i.ones();
@@ -497,7 +636,9 @@ private:
         cudaThreadSynchronize();
     }
 
-    //r[i][j] <- this[i][j] + beta*i[i][j]
+    /*!
+      @brief This function caluculates r[i][j] <= this[i][j] + beta*i[i][j]
+     */
     void plus(const float beta, cuMat &i, cuMat &r){
         float alpha = 1;
         cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
@@ -514,7 +655,9 @@ private:
         cudaThreadSynchronize();
     }
 
-    //r[i][j] = this[i][j] - b[i][j]
+    /*!
+      @brief This function calculates r[i][j] <= this[i][j] - b[i][j]
+    */
     void minus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = -1;
@@ -532,7 +675,9 @@ private:
         cudaThreadSynchronize();
     }
 
-    //r[i][j] <- alpha * this[i][j]
+    /*!
+      @brief This function caluculates r[i][j] <= alpha * this[i][j]
+    */
     void mul(const float alpha, cuMat &r){
         float beta = 0;
         cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
@@ -547,12 +692,17 @@ private:
         cudaThreadSynchronize();
     }
 
-    //r[i][j] <- this[i][j] * m[i][j]
+    /*!
+      @brief This function calculates elementwise product r[i][j] <= this[i][j] * m[i][j]. 
+    */
     void mul(const cuMat &m, cuMat &r){
         mat_mul_elementwise_kernel_exec(m_device_, m.m_device_, r.m_device_, cols_, rows_);
     }
 
     //r[i][j] += alpha * this[i][j]
+    /*!
+      @brief This operates r[i][j] += alpha*this[i][j]
+     */
     void mul_plus(const float alpha, cuMat &r){
         float beta = 1;
         cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
@@ -567,23 +717,32 @@ private:
         cudaThreadSynchronize();
     }
 
-    //r[i][j] += alpha * this[i][j] * beta * m[i][j]
+    /*!
+      @brief This function operates r[i][j] += alpha * this[i][j] * beta * m[i][]j]
+     */
     void mul_plus(const cuMat &m, cuMat &r, float alpha, float beta){
         mat_mul_plus_elementwise_kernel_exec(m_device_, m.m_device_, r.m_device_, alpha, beta, cols_, rows_);
     }
 
-    //r[i][j] <- this[i][j] / p
+    /*!
+      @brief This operates r[i][j] <= this[i][j] / p
+     */
     void div(const float p, cuMat &r){
         matmod_kernel_exec(m_device_, r.m_device_, cols_, rows_, p);
     }
 
-    //r[i][j] <-  this[i][j] / b[i][j]
+    /*!
+      @brief This function operates r[i][j] <= this[i][j] / b[i][j]
+     */
     void div(const cuMat &b, const cuMat &r){
         mat_div_kernel_exec(m_device_, b.m_device_, r.m_device_, cols_, rows_);
     }
 
 public:
-    //A.dot(B) returns A@B
+    /*!
+      @brief This returns a matrix product with b. like C = A.dot(B)
+      @param b This is the matrix to multiply to *this
+     */
     cuMat dot(const cuMat &b){
         cuMat r(this->rows_, b.cols_);
         dot(b, r);
@@ -591,6 +750,11 @@ public:
     }
 
     // r <- this@b where this(rows_ X cols_) and b(rows_ X)
+    /*!
+      @brief This operates r <= *this @ B
+      @param b This is the operand of *this
+      @param r This is the matrix to store the result
+     */
     void dot(const cuMat &b, cuMat &r){
         float alpha = 0;
         float beta = 0;
@@ -607,7 +771,11 @@ public:
         cudaThreadSynchronize();
     }
 
-    //r += this@b
+    /*!
+      @brief This operates r += *this @ b
+      @param b This is the operand
+      @param r This is the matrix to store the result
+     */
     void dot_plus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = 1;
@@ -626,7 +794,11 @@ public:
         cudaThreadSynchronize();
     }
 
-    //r += Trans(this)@b
+    /*!
+      @brief This operates r += t(*) @ b
+      @param b This is the operand
+      @param r This is the matrix to store the result
+     */
     void transpose_dot_plus(const cuMat &b, cuMat &r){
         float alpha = 1;
         float beta = 1;
@@ -851,6 +1023,11 @@ public:
         cudaFree(sum_d);
 
         return std::sqrt(sum_h);
+    }
+
+    void fill(float a){
+        this->ones();
+        this->mul(a, *this);
     }
 };
 #endif

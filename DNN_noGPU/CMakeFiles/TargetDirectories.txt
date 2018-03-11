@@ -1,1 +1,0 @@
-/home/mamoru/DeepLearning/DNN_noGPU/CMakeFiles/a.out.dir
