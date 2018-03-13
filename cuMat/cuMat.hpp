@@ -1,5 +1,5 @@
 /*!
-  @file cuMat.h
+  @file cuMat.hpp
   @brief header file for libcumat.so
   @author soblin
   @date 3/10
@@ -11,7 +11,7 @@
 #include "mat_ones_kernel.h"
 #include "mat_mul_elementwise_kernel.h"
 #include "mat_mul_plus_elementwise_kernel.h"
-#include "matmod_kernel.h"
+#include "mat_mod_kernel.h"
 #include "slice_rows_kernel.h"
 #include "mat_div_kernel.h"
 #include "mat_log_kernel.h"
@@ -31,9 +31,11 @@
 #include "mat_l2_kernel.h"
 #include "mat_exp_kernel.h"
 #include "mat_inverse_kernel.h"
+#include "mat_inverse_d_kernel.h"
 
 #include <iostream>
 #include <cmath>
+#include <cstdlib>
 #include <random>
 #include <sstream>
 #include <map>
@@ -145,7 +147,8 @@ public:
 
         new_matrix(a.rows_, a.cols_);
 
-        cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(m_device_),
+        // 3/12 modified from sizeof(m_device_) to sizeof(*m_device_)
+        cudaError_t error = cudaMemcpy(m_device_, a.m_device_, rows_*cols_*sizeof(*m_device_),
                                        cudaMemcpyDeviceToDevice);
 
         if(error != cudaSuccess) FatalError("cuMat copy constructer failed");
@@ -164,6 +167,7 @@ public:
      */
     void memMallocHost(){
         m_host_ = (float*)malloc(rows_*cols_*sizeof(*m_host_));
+        //if(!m_host_) FatalError("memMallocHost failed");
         for(int i=0; i<rows_; i++){
             for(int j=0; j<cols_; j++){
                 m_host_[IDX2F(i, j, rows_)] = 0.0;
@@ -184,11 +188,12 @@ public:
     /*!
       @brief new_matrix malloc new memory in device. If the current size of *this and designated size is different, *this will be resized. 
       @sa del_matrix
-     */
+    */
     void new_matrix(const int rows, const int cols){
         //サイズが違う場合はリサイズ
         if(this->rows_ != rows || this->cols_ != cols){
             if(m_device_ != nullptr || m_host_ != nullptr) del_matrix();
+        
             this->rows_ = rows;
             this->cols_ = cols;
 
@@ -204,7 +209,7 @@ public:
 
     /*!
       @brief del_matrix frees both main memory and device memory.
-     */
+    */
     
     void del_matrix(){
         if(m_device_ != nullptr){
@@ -340,6 +345,7 @@ public:
     /*!
       @brief This is the substition constructor(<=> copy constructor). Copies device memory of a to that of *this.
       @param a This is the rvalue of operator=
+      @sa cuMat(const cuMat &a)
      */
     cuMat &operator=(const cuMat &a){
         new_matrix(a.rows_, a.cols_);
@@ -383,12 +389,14 @@ public:
      */
     friend std::ostream &operator<<(std::ostream &output, cuMat &a){
         if(a.m_device_ == nullptr){
-            FatalError("m_device_ is nullptr so cannot <<");
-        }
-        if(a.m_host_ == nullptr){
-            FatalError("m_host_ is nullptr so cannot <<");
+            std::cout << "cuMat operator<< a.m_device_ is nullptr" << std::endl;
+            if(a.m_host_ == nullptr){
+                std::cout << "also cuMat operator<< a.m_host_ is nullptr" << std::endl;
+            }
         }
 
+        if(a.m_host_ == nullptr) a.memMallocHost();
+        
         cudaError_t error = cudaMemcpy(a.m_host_/*dst*/, a.m_device_/*src*/, a.rows_*a.cols_*sizeof(*m_device_), cudaMemcpyDeviceToHost);
         if(error != cudaSuccess){
             FatalError("cudaMemcpy failed in <<");
@@ -398,20 +406,23 @@ public:
         output << "[";
         if(a.rows_ < 11){
             for(int i=0; i<a.rows_; i++){
+                if(i != 0) output << " ";
                 printRows(output, a, i);
-                if(i != a.rows_-1) output << std::endl;
+                if(i != a.rows_-1) output << "\n";
                 else output << "]" << std::endl;
             }
         }
         else{
             for(int i=0; i<5; i++){
+                if(i != 0) output << " ";
                 printRows(output,  a, i);
-                output << std::endl;
+                output << "\n";
             }
-            output << "...," << std::endl;
+            output << " ...," << std::endl;
             for(int i=a.rows_-5; i<a.rows_; i++){
+                if(i != 0) output << " ";
                 printRows(output, a, i);
-                if(i != a.rows_-1) output << std::endl;
+                if(i != a.rows_-1) output << "\n";
                 else{ output << "]" << std::endl;}
             }
         }
@@ -440,7 +451,7 @@ public:
       @sa mat_ones_kernel_exec
      */
     void ones(){
-        mat_ones_kernel_exec(m_device_, m_device_, cols_, rows_);
+        mat_ones_kernel_exec(m_host_, m_device_, cols_, rows_);
     }
 
     /*!
@@ -471,7 +482,7 @@ public:
      */
     friend cuMat operator+(const cuMat &a, const float b){
         cuMat r = a;
-        r.plus(a, r);
+        r.plus(b, r);
 
         return r;
     }
@@ -583,15 +594,6 @@ public:
     }
 
 private:
-
-    /*
-      arithmatic manipulation functions
-      plus/minus ... for operator+/-.
-      (cuMat + cuMat), (cuMat + float)
-      mul ... cuMat * float, cuMat*cuMat(element_wise)
-      dot ... cuMat@cuMat(multipliction of matricies)
-      div ... cuMat * (1 / float)
-    */
 
     /*!
       @brief This function calculates r[i][j] <= this[i][j] + b[i][j]
@@ -728,7 +730,7 @@ private:
       @brief This operates r[i][j] <= this[i][j] / p
      */
     void div(const float p, cuMat &r){
-        matmod_kernel_exec(m_device_, r.m_device_, cols_, rows_, p);
+        mat_mod_kernel_exec(m_device_, r.m_device_, cols_, rows_, p);
     }
 
     /*!
@@ -756,7 +758,7 @@ public:
       @param r This is the matrix to store the result
      */
     void dot(const cuMat &b, cuMat &r){
-        float alpha = 0;
+        float alpha = 1;
         float beta = 0;
         cublasStatus_t stat = cublasSgemm(cuda_handle_,
                                           CUBLAS_OP_N, CUBLAS_OP_N,
@@ -795,7 +797,7 @@ public:
     }
 
     /*!
-      @brief This operates r += t(*) @ b
+      @brief This operates r += t(*this) @ b
       @param b This is the operand
       @param r This is the matrix to store the result
      */
@@ -910,54 +912,81 @@ public:
         return r;
     }
 
+    /*!
+      @sa relu_kernel_exec
+     */
     cuMat relu(){
         cuMat r(rows_, cols_);
         relu(r);
         return r;
     }
 
+    /*!
+      @sa prelu_kernel_exec
+     */
     cuMat prelu(cuMat &a){
         cuMat r(rows_, cols_);
         prelu(a, r);
         return r;
     }
 
+    /*!
+      @sa relu_d_kernel_exec
+     */
     cuMat relu_d(){
         cuMat r(rows_, cols_);
         relu_d(r);
         return r;
     }
 
+    /*!
+      @sa prelu_d_kernel_exec
+     */
     cuMat prelu_d(cuMat &a, cuMat &da){
         cuMat r(rows_, cols_);
         prelu_d(a, r, da);
         return r;
     }
-    
+
+    /*!
+      @sa sigmoid_kernel_exec
+     */
     cuMat sigmoid(){
         cuMat r(rows_, cols_);
         sigmoid(r);
         return r;
     }
 
+    /*!
+      @sa sigmoid_d_kernel_exec
+     */
     cuMat sigmoid_d(){
         cuMat r(rows_, cols_);
         sigmoid_d(r);
         return r;;
     }
 
+    /*!
+      @sa tanh_kernel_exec
+     */
     cuMat tanh(){
         cuMat r(rows_, cols_);
         tanh(r);
         return r;
     }
 
+    /*!
+      @sa tanh_d_kernel_exec
+     */
     cuMat tanh_d(){
         cuMat r(rows_, cols_);
         tanh_d(r);
         return r;
     }
 
+    /*!
+      @sa softmax_kernel_exec
+     */
     cuMat softmax(){
         cuMat r(rows_, cols_);
         softmax(r);
@@ -1002,6 +1031,15 @@ public:
     cuMat inverse(){
         cuMat r(rows_, cols_);
         inverse(r);
+        return r;
+    }
+
+    /*!
+      @sa mat_inverse_d_kernel_exec
+     */
+    cuMat inverse_d(){
+        cuMat r(rows_, cols_);
+        inverse_d(r);
         return r;
     }
 private:
@@ -1069,6 +1107,10 @@ private:
 
     void inverse(cuMat &r){
         mat_inverse_kernel_exec(m_device_, r.m_device_, cols_, rows_);
+    }
+
+    void inverse_d(cuMat &r){
+        mat_inverse_d_kernel_exec(m_device_, r.m_device_, cols_, rows_);
     }
 };
 #endif
