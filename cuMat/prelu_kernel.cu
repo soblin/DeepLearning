@@ -1,6 +1,6 @@
 #include "prelu_kernel.h"
 
-#define BLOCK_SIZE 32
+static const int block_size = 32;
 
 __device__ __forceinline__ float prelu(float x, float a){
     return x > 0.0f ? x : a*x;
@@ -19,7 +19,7 @@ __global__ void prelu_kernel(const float * __restrict__ src,
 }
 
 void prelu_kernel_exec(const float *src, const float *a, float *dst, int m, int n){
-    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 block(block_size, block_size);
     dim3 grid((n + block.x-1)/block.x, (m + block.y-1)/block.y);
 
     prelu_kernel <<< grid, block >>> (src, a, dst, m, n);

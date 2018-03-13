@@ -15,7 +15,7 @@ __global__ void mat_exp_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = exp(src[i][j]+alpha)
+      @brief \f$ \mathrm{dst[i][j] = exp(src[i][j] + alpha)} \f$
      */
     void mat_exp_kernel_exec(const float *src, float *dst, int m, int n, float alpha);
 #ifdef __cplusplus

@@ -16,7 +16,7 @@ __global__ void mat_sqrt_d_kernel(const float * __restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief Let's remember that d/dx{sqrt(x)} = 1.0/{2.0*sqrt(x)}. This operates dst[i][j] = 1.0/(2.0*sqrt(src[i][j]+alpha))
+      @brief Let's remember that \f$ \mathrm{d/dx{sqrt(x)} = 1.0/\{2.0*sqrt(x)\}} \f$. This operates \f$ \mathrm{dst[i][j] = 1.0/(2.0*sqrt(src[i][j]+\alpha))} \f$
       @param alpha This is a small epsilon to avoid null division.
     */
     void mat_sqrt_d_kernel_exec(const float *src, float *dst, int m, int n, float alpha);

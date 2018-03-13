@@ -10,7 +10,7 @@
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = (src[i][j] > 0.0)? src[i][j] : src[i][j]*a[i][j]
+      @brief This operates \f$ \mathrm{dst[i][j] = (src[i][j] > 0.0)? src[i][j] : src[i][j]*a[i][j]} \f$
      */
     void prelu_kernel_exec(const float *src, const float *a, float *dst, int m, int n);
 #ifdef __cplusplus

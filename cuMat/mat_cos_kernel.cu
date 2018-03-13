@@ -1,7 +1,7 @@
 #include "mat_cos_kernel.h"
 #include <cmath>
 
-#define BLOCK_SIZE 32
+static const int block_size = 32;
 
 __device__ __forceinline__ float mat_cos(float a, float alpha){
     return std::cos(a + alpha);
@@ -17,7 +17,7 @@ __global__ void mat_cos_kernel(const float * __restrict__ src,
 
 
 void mat_cos_kernel_exec(const float *src, float *dst, int m, int n, float alpha){
-    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 block(block_size, block_size);
     dim3 grid((n + block.x-1)/block.x, (m + block.y-1)/block.y);
 
     mat_cos_kernel <<< grid, block >>> (src, dst, m, n, alpha);

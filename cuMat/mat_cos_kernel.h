@@ -1,3 +1,6 @@
+/*!
+  @file mat_cos_kernel.h
+ */
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
 #ifndef MAT_COS_KERNEL_H_
@@ -11,6 +14,9 @@ __global__ void mat_cos_kernel(const float * __restrict__ src,
 #ifdef __cplusplus
 extern "C"{
 #endif
+    /*!
+      @brief \f$ \mathrm{dst[i][j] = \cos(src[i][j])}  \f$
+     */
     void mat_cos_kernel_exec(const float *src, float *dst, int m, int n, float alpha);
 #ifdef __cplusplus
 };

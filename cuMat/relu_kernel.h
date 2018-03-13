@@ -15,7 +15,7 @@ __global__ void relu_kernel(const float * __restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = (src[i][j] > 1.0)? dst[i][j] : 0.0
+      @brief This operates \f$ \mathrm{dst[i][j] = (src[i][j] > 1.0)? dst[i][j] : 0.0} \f$
      */
     void relu_kernel_exec(const float *src, float *dst, int m, int n);
 #ifdef __cplusplus

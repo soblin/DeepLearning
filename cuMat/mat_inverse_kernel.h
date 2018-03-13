@@ -15,7 +15,7 @@ __global__ void mat_inverse_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = 1.0/(src[i][j]+1e-8)
+      @brief \f$ \mathrm{dst[i][j] = 1.0/(src[i][j]+1e-8)} \f$
      */
     void mat_inverse_kernel_exec(const float *src, float *dst, int m, int n);
 #ifdef __cplusplus   

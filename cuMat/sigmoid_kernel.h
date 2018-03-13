@@ -15,7 +15,7 @@ __global__ void sigmoid_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = 1.0 / (1.0 + exp(-src[i][j]))
+      @brief This operates \f$ \mathrm{dst[i][j] = 1.0 / (1.0 + exp(-src[i][j]))} \f$
      */
     void sigmoid_kernel_exec(const float *src, float *dst, int m, int n);
 #ifdef __cplusplus

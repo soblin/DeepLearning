@@ -15,7 +15,7 @@ __global__ void sigmoid_d_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates dst[i][j] = d/dx{sigmoid(src[i][j])} (= b * (1.0-b) where b = sigmoid(src[i][j]))
+      @brief This operates \f$ dst[i][j] = \mathrm{d/dx[sigmoid(src[i][j])] (= b * (1.0-b) where b = sigmoid(src[i][j]))} \f$
      */
     void sigmoid_d_kernel_exec(const float *src, float *dst, int m, int n);
 #ifdef __cplusplus

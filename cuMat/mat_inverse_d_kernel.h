@@ -15,7 +15,7 @@ __global__ void mat_inverse_d_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This function operates \f$ \mathrm{dst[i][j] = -1.0/src[i][j]^{2}} \f$
+      @brief \f$ \mathrm{dst[i][j] = -1.0/src[i][j]^{2}} \f$
      */
     void mat_inverse_d_kernel_exec(const float *src, float *dst, int m ,int n);
 #ifdef __cplusplus

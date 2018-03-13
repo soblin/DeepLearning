@@ -15,7 +15,7 @@ __global__ void tanh_kernel(const float *__restrict__ src,
 extern "C"{
 #endif
     /*!
-      @brief This operates \f$dst[i][j] = \tanh(src[i][j])\f$
+      @brief This operates \f$ \mathrm{dst[i][j] = \tanh(src[i][j])} \f$
      */
     void tanh_kernel_exec(const float *src, float *dst, int m, int n);
 #ifdef __cplusplus

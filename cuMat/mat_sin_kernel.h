@@ -1,3 +1,6 @@
+/*!
+  @file mat_sin_kernel.h
+*/
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
 
 #ifndef MAT_SIN_KERNEL_H_
@@ -11,7 +14,10 @@ __global__ void mat_sin_kernel(const float * __restrict__ src,
 #ifdef __cplusplus
 extern "C"{
 #endif
-    void mat_sin_kernel_exec(const float *src, const float *dst, int m, int n, float alpha);
+    /*!
+      @brief \f$ \mathrm{dst[i][j] = \sin(src[i][j])} \f$
+     */
+    void mat_sin_kernel_exec(const float *src, float *dst, int m, int n, float alpha);
 #ifdef __cplusplus
 };
 #endif

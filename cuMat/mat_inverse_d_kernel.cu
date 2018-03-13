@@ -1,6 +1,6 @@
 #include "mat_inverse_d_kernel.h"
 
-#define BLOCK_SIZE 32
+static const int block_size = 32;
 
 __device__ __forceinline__ float mat_inverse_d(float a){
     return -1.0 / (a+1e-8)*(a+1e-8);
@@ -17,7 +17,7 @@ __global__ void mat_inverse_d_kernel(const float *__restrict__ src,
 }
 
 void mat_inverse_d_kernel_exec(const float *src, float *dst, int m, int n){
-    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 block(block_size, block_size);
     dim3 grid((n+block.x-1)/block.x, (m+block.y-1)/block.y);
 
     mat_inverse_d_kernel <<< grid, block >>> (src, dst, m, n);

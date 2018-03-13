@@ -1,6 +1,6 @@
 #include "relu_kernel.h"
 
-#define BLOCK_SIZE 32
+static const int block_size = 32;
 
 __device__ __forceinline__ float relu(float a){
     return a > 0.0f? a : .0f;
@@ -15,7 +15,7 @@ __global__ void relu_kernel(const float * __restrict__ src,
 }
 
 void relu_kernel_exec(const float *src, float *dst, int m, int n){
-    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 block(block_size, block_size);
     dim3 grid((n + block.x-1)/block.x, (m + block.y-1)/block.y);
 
     relu_kernel <<< grid, block >>> (src, dst, m, n);
