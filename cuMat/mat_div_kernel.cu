@@ -9,7 +9,7 @@ __global__ void mat_div_kernel(const float * __restrict__ src1,
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(row < m && col < n)
-        dst[row * n + col] = src1[row * n + col] / src2[row * n + col];
+        dst[row * n + col] = src1[row * n + col] / (src2[row * n + col] + 1e-8);
 }
 
 void mat_div_kernel_exec(const float *src1, const float *src2, float *dst, int m, int n){

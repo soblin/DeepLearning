@@ -34,14 +34,16 @@
 #include "mat_inverse_d_kernel.h"
 
 #include <iostream>
-#include <cmath>
-#include <cstdlib>
+#include <iomanip>
 #include <random>
 #include <sstream>
 #include <map>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/vector.hpp>
+
+#include <cmath>
+#include <cstdlib>
 
 #include "/usr/local/cuda-9.1/include/cublas_v2.h"
 #include "/usr/local/cuda-9.1/include/cuda_runtime.h"
@@ -372,12 +374,13 @@ public:
       @brief This function displays the i-th row of *this. If the column is ls leq10, print all. Else print only the 2elements from both start and end.
      */
     friend void printRows(std::ostream &output, const cuMat &a, int i){
+        output.setf(std::ios::left, std::ios::adjustfield);
         output << "[";
-        if(a.cols_ < 11){
-            for(int j=0; j<a.cols_; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
+        if(a.cols_ < 7){
+            for(int j=0; j<a.cols_; j++) output << std::setw(7) << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
         }
         else{
-            for(int j=0; j<3; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
+            for(int j=0; j<3; j++) output << std::setw(7) <<a.m_host_[IDX2F(i, j, a.rows_)] << " ";
             std::cout << "..., ";
             for(int j=a.cols_-2; j<a.cols_; j++) output << a.m_host_[IDX2F(i, j, a.rows_)] << " ";
         }
@@ -404,7 +407,7 @@ public:
         
         output << "A matrix of " << a.rows_ << " X " << a.cols_ << std::endl;
         output << "[";
-        if(a.rows_ < 11){
+        if(a.rows_ < 7){
             for(int i=0; i<a.rows_; i++){
                 if(i != 0) output << " ";
                 printRows(output, a, i);
@@ -426,6 +429,7 @@ public:
                 else{ output << "]" << std::endl;}
             }
         }
+        std::cout << std::endl;
         return output;
     }
     /*
@@ -880,7 +884,7 @@ public:
     //followiings are methematical functions.
     cuMat log(){
         cuMat r(rows_, cols_);
-        log(r, 0.0);
+        log(r, 1e-8);
         return r;
     }
     
