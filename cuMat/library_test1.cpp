@@ -10,7 +10,7 @@ int main(){
     std::cout << "Test of memSetHost and memHostToDevice." << std::endl;
     for(int i=0; i<A.row(); i++){
          for(int j=0; j<A.col(); j++){
-             A.memSetHost(i,j, 10);
+             A.memSetHost(i,j, j+i*A.col());
          }
      }
     A.memHostToDevice();
