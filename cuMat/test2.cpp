@@ -1,4 +1,4 @@
-#include "cuMat.hpp"
+#include "cuMat.h"
 
 MallocCounter mallocCounter;
 

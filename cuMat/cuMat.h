@@ -5,8 +5,8 @@
   @date 3/10
  */
 
-#ifndef CUMAT_HPP_
-#define CUMAT_HPP_
+#ifndef CUMAT_H_
+#define CUMAT_H_
 
 #include "mat_ones_kernel.h"
 #include "mat_mul_elementwise_kernel.h"
@@ -598,6 +598,23 @@ public:
         return *this;
     }
 
+     /*!
+      @brief This function caluculates r[i][j] <= alpha * this[i][j]
+    */
+    void mul(const float alpha, cuMat &r){
+        float beta = 0;
+        cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
+                                          CUBLAS_OP_N, CUBLAS_OP_N,
+                                          rows_, cols_,
+                                          &alpha,
+                                          m_device_, rows_,
+                                          &beta,
+                                          r.m_device_, rows_,
+                                          r.m_device_, r.rows_);
+        if(stat !=CUBLAS_STATUS_SUCCESS) FatalError("cannot cublasSgeam in mul(cosnt float, cuMat &)");
+        cudaThreadSynchronize();
+    }
+
 private:
 
     /*!
@@ -682,22 +699,6 @@ private:
         cudaThreadSynchronize();
     }
 
-    /*!
-      @brief This function caluculates r[i][j] <= alpha * this[i][j]
-    */
-    void mul(const float alpha, cuMat &r){
-        float beta = 0;
-        cublasStatus_t stat = cublasSgeam(r.cuda_handle_,
-                                          CUBLAS_OP_N, CUBLAS_OP_N,
-                                          rows_, cols_,
-                                          &alpha,
-                                          m_device_, rows_,
-                                          &beta,
-                                          r.m_device_, rows_,
-                                          r.m_device_, r.rows_);
-        if(stat !=CUBLAS_STATUS_SUCCESS) FatalError("cannot cublasSgeam in mul(cosnt float, cuMat &)");
-        cudaThreadSynchronize();
-    }
 
     /*!
       @brief This function calculates elementwise product r[i][j] <= this[i][j] * m[i][j]. 
