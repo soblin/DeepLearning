@@ -4,9 +4,9 @@ MallocCounter mallocCounter;
 
 int main(){
     cuMat A(3, 3);
-    for(int i=0; i<A.row(); i++){
-        for(int j=0; j<A.col(); j++){
-            A.memSetHost(i, j, j+i*A.col());
+    for(int i=0; i<A.getRow(); i++){
+        for(int j=0; j<A.getCol(); j++){
+            A.memSetHost(i, j, j+i*A.getCol());
         }
     }
     A.memHostToDevice();

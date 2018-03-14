@@ -88,5 +88,5 @@ slice_rows_kernel.o: slice_rows_kernel.cu
 	$(NVCC) -Xcompiler -fPIC -c slice_rows_kernel.cu $(INC)
 
 clean:
-	rm -f libcumat.so
+#	rm -f libcumat.so
 	rm -f *.o

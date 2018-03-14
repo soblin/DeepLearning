@@ -32,6 +32,7 @@
 #include "mat_exp_kernel.h"
 #include "mat_inverse_kernel.h"
 #include "mat_inverse_d_kernel.h"
+#include "def.h"
 
 #include <iostream>
 #include <iomanip>
@@ -112,12 +113,12 @@ public:
     /*!
       @brief This function returns the row number.
      */
-    inline int row() const { return rows_; }
+    inline int getRow() const { return rows_; }
 
     /*!
       @brief This function returns the column number.
      */
-    inline int col() const { return cols_; }
+    inline int getCol() const { return cols_; }
 
 
     /*!
@@ -884,13 +885,13 @@ public:
     //followiings are methematical functions.
     cuMat log(){
         cuMat r(rows_, cols_);
-        log(r, 1e-8);
+        log(r, eps);
         return r;
     }
     
     cuMat sqrt(){
         cuMat r(rows_, cols_);
-        sqrt(r, 1e-8);
+        sqrt(r, eps);
         return r;
     }
 
@@ -900,7 +901,7 @@ public:
      */
      cuMat sqrt_d(){
         cuMat r(rows_, cols_);
-        sqrt_d(r, 1e-8);
+        sqrt_d(r, eps);
         return r;
     }
 
@@ -1106,7 +1107,7 @@ private:
     }
 
     void exp(cuMat &r){
-        mat_exp_kernel_exec(m_device_, r.m_device_, cols_, rows_, 1e-8);
+        mat_exp_kernel_exec(m_device_, r.m_device_, cols_, rows_, 0.0);
     }
 
     void inverse(cuMat &r){

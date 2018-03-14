@@ -1,4 +1,5 @@
 #include "mat_mod_kernel.h"
+#include "def.h"
 
 static const int block_size = 32;
 
@@ -8,7 +9,7 @@ __global__ void mat_mod_kernel(const float * __restrict__ src,
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(row < m && col < n){
-        dst[row*n+col] = p / (src[row*n+col]+1e-8);
+        dst[row*n+col] = p / (src[row*n+col]+eps);
     }
 }
 

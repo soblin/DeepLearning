@@ -1,4 +1,5 @@
 #include "mat_div_kernel.h"
+#include "def.h"
 
 static const int block_size = 32;
 //apply dst[i][j] = src1[i][j] / src2[i][j]
@@ -9,7 +10,7 @@ __global__ void mat_div_kernel(const float * __restrict__ src1,
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if(row < m && col < n)
-        dst[row * n + col] = src1[row * n + col] / (src2[row * n + col] + 1e-8);
+        dst[row * n + col] = src1[row * n + col] / (src2[row * n + col] + eps);
 }
 
 void mat_div_kernel_exec(const float *src1, const float *src2, float *dst, int m, int n){
