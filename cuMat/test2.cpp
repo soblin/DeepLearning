@@ -22,4 +22,6 @@ int main(){
 
     float l = A.l2();
     std::cout << l << std::endl; //OK
+    l = A.sum();
+    std::cout << l << std::endl; //OK
 }
