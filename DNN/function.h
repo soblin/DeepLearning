@@ -16,7 +16,7 @@ extern std::map<Variable *, bool> obj_pool2;
 extern int count_funciton;
 extern int count_variable;
 
-class Function_base{
+class FunctionBase{
 public:
     std::vector<Variable> inputs;
     std::vector<Variable> outputs;
@@ -26,8 +26,8 @@ public:
     std::string custom_name_;
     int inner_count_ = 0;
 
-    Function_base();
-    virtual ~Function_base();
+    FunctionBase();
+    virtual ~FunctionBase();
 
     virtual Variable forward(const Variable input);
     virtual Variable forward(const Variable x, const Variable t);
@@ -42,33 +42,33 @@ public:
     virtual void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 
     void init();
-    void clip_grad(Variable_base *v);
+    void clip_grad(VariableBase *v);
 
     virtual void reset_state();
     
 };
 
-class FunctionPlus : public Function_base{
+class FunctionPlus : public FunctionBase{
 public:
     FunctionPlus();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FuncitonMinus : public Function_base{
+class FuncitonMinus : public FunctionBase{
 public:
     FuncitonMinus();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void  backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionMul : public Function_base{
+class FunctionMul : public FunctionBase{
     FunctionMul();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSin : public Function_base{
+class FunctionSin : public FunctionBase{
 public:
     FunctionSin();
     Variable rr = nullptr;
@@ -77,7 +77,7 @@ public:
 };
 
 //PVariable 
-class FunctionCos : public Function_base{
+class FunctionCos : public FunctionBase{
 public:
     FunctionCos();
     Variable rr = nullptr;
@@ -85,39 +85,39 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionLog : public Function_base{
+class FunctionLog : public FunctionBase{
 public:
     FunctionLog();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSqrt : public Function_base{
+class FunctionSqrt : public FunctionBase{
 public:
     FunctionSqrt();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionInverse : public Function_base{
+class FunctionInverse : public FunctionBase{
 public:
     FunctionInverse();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionLinear : public Function_base{
+class FunctionLinear : public FunctionBase{
 public:
-    Variable_base *w;
-    Variable_base *b;
+    VariableBase *w;
+    VariableBase *b;
     cuMat i1;
 
     bool no_bias_ = false;
     bool is_transpose_ = false;
 
     FunctionLinear();
-    FunctionLinear(Variable_base *w, Variable_base *b, bool is_transpose = false);
-    FunctionLinear(Variable_base *w, bool is_transpose = false);
+    FunctionLinear(VariableBase *w, VariableBase *b, bool is_transpose = false);
+    FunctionLinear(VariableBase *w, bool is_transpose = false);
     FunctionLinear(int output_size, int input_size);
     FunctionLinear(int output_size ,int input_size, bool no_bias);
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
@@ -126,7 +126,7 @@ public:
     void formHostArray();
 };
 
-class FunctionReLU : public Function_base{
+class FunctionReLU : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionReLU();
@@ -134,7 +134,7 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionPReLU : public Function_base{
+class FunctionPReLU : public FunctionBase{
 public:
     Variable *a;
     Variable xd = nullptr;
@@ -144,7 +144,7 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSigmoid : public Function_base{
+class FunctionSigmoid : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionSigmoid();
@@ -152,7 +152,7 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionTanh : public Function_base{
+class FunctionTanh : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionTanh();
@@ -160,13 +160,13 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSoftmax : public Function_base{
+class FunctionSoftmax : public FunctionBase{
 public:
     FunctionSoftmax();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSoftmaxCrossEntropy : public Function_base{
+class FunctionSoftmaxCrossEntropy : public FunctionBase{
 public:
     Variable rr = nullptr;
     Variable rr2 = nullptr;
@@ -179,7 +179,7 @@ public:
     void backward(cuMat &p_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionMeanSquareError : public Function_base{
+class FunctionMeanSquareError : public FunctionBase{
 public:
     Variable rr = nullptr;
     cuMat loss;
@@ -188,7 +188,7 @@ public:
     void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionIdentity : public Function_base{
+class FunctionIdentity : public FunctionBase{
 public:
     FunctionIdentity();
     Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &ouputs);

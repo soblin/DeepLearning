@@ -7,9 +7,9 @@
 
 #include "../cuMat/cuMat.h"
 
-class Function_base;
+class FunctionBase;
 
-class Variable_base{
+class VariableBase{
 public:
     int id_ = 0;
     int opt_ = 0;
@@ -17,7 +17,7 @@ public:
     bool *is_last_backward_ = nullptr;
 
     int forward_count_ = 0;
-    Function_base *creator_ = nullptr;
+    FunctionBase *creator_ = nullptr;
 
     std::string name_;
 
@@ -29,26 +29,26 @@ public:
 
     bool is_get_grad_ = true;
 
-    Variable_base();
-    Variable_base(int row, int col);
-    Variable_base(int row, int col, bool is_get_grad);
-    Variable_base(Function_base *f, int row, int col);
-    Variable_base(Function_base *f, cuMat &input);
-    Variable_base(cuMat &input);
-    Variable_base(std::vector<float> &ids, int nums);
-    Variable_base(const Variable_base &v);
-    Variable_base &operator=(const Variable_base &v);
-    ~Variable_base();
+    VariableBase();
+    VariableBase(int row, int col);
+    VariableBase(int row, int col, bool is_get_grad);
+    VariableBase(FunctionBase *f, int row, int col);
+    VariableBase(FunctionBase *f, cuMat &input);
+    VariableBase(cuMat &input);
+    VariableBase(std::vector<float> &ids, int nums);
+    VariableBase(const VariableBase &v);
+    VariableBase &operator=(const VariableBase &v);
+    ~VariableBase();
 
-    void creatorSet(Function_base *f);
-    Variable_base sin();
-    Variable_base log();
+    void creatorSet(FunctionBase *f);
+    VariableBase sin();
+    VariableBase log();
 
     void backward();
-    void backward(Variable_base *v);
+    void backward(VariableBase *v);
 
     void zero_grads();
-    void zero_grads(Variable_base *v);
+    void zero_grads(VariableBase *v);
 
     void ones();
     void zeros();
@@ -61,9 +61,9 @@ public:
     float val();
 };
 
-using Variable = std::shared_ptr<Variable_base>;
+using Variable = std::shared_ptr<VariableBase>;
 
-Variable_base *variable_construct(int row, int col);
-void variable_destroy(Variable_base *ptr);
+VariableBase *variable_construct(int row, int col);
+void variable_destroy(VariableBase *ptr);
 
 #endif

@@ -9,13 +9,13 @@
 int count_fuonction = 0;
 int count_variable = 0;
 
-std::map<Variable_base*, bool> variable_pool;
+std::map<VariableBase*, bool> variable_pool;
 
-Variable_base * variable_construct(int rows, int cols){
+VariableBase * variable_construct(int rows, int cols){
     count_variable++;
     for(auto itr=variable_pool.begin(); itr != variable_pool.end(); ++itr){
         if(!itr->second){
-            Variable_base *v = static_cast<Variable_base *>(itr->first);
+            VariableBase *v = static_cast<VariableBase *>(itr->first);
             if(v->data_.getRow() == rows && v->data_.getCol() == cols){
                 v->zeros();
                 v->creator_ = nullptr;
@@ -25,13 +25,13 @@ Variable_base * variable_construct(int rows, int cols){
             }
         }
     }
-    Variable_base *r = new Variable_base(rows, cols);
+    VariableBase *r = new VariableBase(rows, cols);
     variable_pool[r] = true;
 
     return r;
 }
 
-void variable_destroy(Variable_base *ptr){
+void variable_destroy(VariableBase *ptr){
     count_variable--;
     variable_pool[ptr] = false;
     if(variable_pool.size() > 4000){
@@ -42,11 +42,11 @@ void variable_destroy(Variable_base *ptr){
 
 int gVariableId = 0;
 
-Variable_base::Variable_base() : id_(gVariableId) {
+VariableBase::VariableBase() : id_(gVariableId) {
     gVariableId++;
 }
 
-Variable_base::Variable_base(const Variable_base &a){
+VariableBase::VariableBase(const VariableBase &a){
     id_ = gVariableId;
     gVariableId++;
 
@@ -59,7 +59,7 @@ Variable_base::Variable_base(const Variable_base &a){
     this->is_get_grad_ = a.is_get_grad_;
 }
 
-Variable_base::Variable_base(int rows, int cols) :
+VariableBase::VariableBase(int rows, int cols) :
     id_(gVariableId),
     data_(cuMat(rows, cols)),
     grad_(cuMat(rows, cols)),
@@ -70,7 +70,7 @@ Variable_base::Variable_base(int rows, int cols) :
     seed_.ones();
 }
 
-Variable_base::Variable_base(int rows, int cols, bool is_get_grad) :
+VariableBase::VariableBase(int rows, int cols, bool is_get_grad) :
     is_get_grad_(is_get_grad),
     id_(gVariableId),
     data_(cuMat(rows, cols)),
@@ -82,7 +82,7 @@ Variable_base::Variable_base(int rows, int cols, bool is_get_grad) :
     seed_.ones();
 }
 
-Variable_base::Variable_base(cuMat &input):
+VariableBase::VariableBase(cuMat &input):
     id_(gVariableId),
     data_(input),
     grad_(cuMat(input.getRow(), input.getCol())),
@@ -93,7 +93,7 @@ Variable_base::Variable_base(cuMat &input):
     seed_.ones();
 }
 
-Variable_base::Variable_base(Function_base *f, int rows, int cols):
+VariableBase::VariableBase(FunctionBase *f, int rows, int cols):
     id_(gVariableId),
     data_(cuMat(rows, cols)),
     grad_(cuMat(rows, cols)),
@@ -104,7 +104,7 @@ Variable_base::Variable_base(Function_base *f, int rows, int cols):
     seed_.ones();
 }
 
-Variable_base::Variable_base(Function_base *f, cuMat &input):
+VariableBase::VariableBase(FunctionBase *f, cuMat &input):
     id_(gVariableId),
     data_(input),
     grad_(cuMat(input.getRow(), input.getCol())),
@@ -115,10 +115,10 @@ Variable_base::Variable_base(Function_base *f, cuMat &input):
     seed_.ones();
 }
 
-Variable_base::~Variable_base(){
+VariableBase::~VariableBase(){
 }
 
-Variable_base &Variable_base::operator=(const Variable_base &v){
+VariableBase &VariableBase::operator=(const VariableBase &v){
     id_ = gVariableId;
     gVariableId++;
     data_ = v.data_;
@@ -130,16 +130,16 @@ Variable_base &Variable_base::operator=(const Variable_base &v){
     return *this;
 }
 
-void Variable_base::creatorSet(Function_base *f){
+void VariableBase::creatorSet(FunctionBase *f){
     this->creator_ = f;
 }
 
-void Variable_base::backward(){
+void VariableBase::backward(){
     this->grad_ = seed_;
     this->backward(this);
 }
 
-void Variable_base::backward(Variable_base *v){
+void VariableBase::backward(VariableBase *v){
     if(v == nullptr) return;
 
     if(v->creator_ != nullptr){
@@ -160,11 +160,11 @@ void Variable_base::backward(Variable_base *v){
     else {}
 }
 
-void Variable_base::zero_grads(){
+void VariableBase::zero_grads(){
     this->zero_grads(this);
 }
 
-void Variable_base::zero_grads(Variable_base *v){
+void VariableBase::zero_grads(VariableBase *v){
     if(v == nullptr) return;
     v->grad_.mul(0, v->grad_);
     v->forward_count_ = 0;
@@ -177,12 +177,12 @@ void Variable_base::zero_grads(Variable_base *v){
     }
 }
 
-void Variable_base::ones(){
+void VariableBase::ones(){
     data_.ones();
     grad_.mul(0, grad_);
 }
 
-void Variable_base::zeros(){
+void VariableBase::zeros(){
     data_.mul(0, data_);
     grad_.mul(0, grad_);
     forward_count_ = 0;
@@ -191,11 +191,11 @@ void Variable_base::zeros(){
     this->creator_ = nullptr;
 }
 
-void Variable_base::unchain(){
+void VariableBase::unchain(){
     this->creator_ = nullptr;
 }
 
-void Variable_base::randoms(float m, float a){
+void VariableBase::randoms(float m, float a){
     std::random_device rd;
     std::mt19937 mt(rd());
     std::normal_distribution<float> initd1(m, a);
@@ -208,7 +208,7 @@ void Variable_base::randoms(float m, float a){
     data_.memHostToDevice();
 }
 
-void Variable_base::binomial_randonms(float ratio){
+void VariableBase::binomial_randonms(float ratio){
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_real_distribution<float> initd1(0.0, 1.0);
@@ -223,7 +223,7 @@ void Variable_base::binomial_randonms(float ratio){
     data_.memHostToDevice();
 }
 
-float Variable_base::val(){
+float VariableBase::val(){
     return data_(0, 0);
 }
 
