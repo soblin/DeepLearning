@@ -6,194 +6,203 @@
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/serialization.hpp>
 
-
 #ifndef FUNCTION_H_
 #define FUNCTION_H_
 
 #include "variable.h"
 
-extern std::map<Variable *, bool> obj_pool2;
-extern int count_funciton;
+extern std::map<VariableBase *, bool> obj_pool2;
+extern int count_function;
 extern int count_variable;
 
-class Function_base{
+class FunctionBase{
 public:
+    // Record the Variable which was substitued into this funciton
     std::vector<Variable> inputs;
+    // Record the Variable which was returned from this function
     std::vector<Variable> outputs;
 
-    int id = -1;
+    int id_ = -1;
     std::string name_;
     std::string custom_name_;
     int inner_count_ = 0;
 
-    Function_base();
-    virtual ~Function_base();
+    FunctionBase();
+    virtual ~FunctionBase();
 
-    virtual Variable forward(const Variable input);
-    virtual Variable forward(const Variable x, const Variable t);
-    virtual Variable forward(const Variable input1, const Variable input2, const Variable inputs3);
-    virtual Variable forward(const Variable input1, const Variable input2, const Variable input3, const Variable input4);
-    virtual Variable forward(const Variable input1, const Variable input2, const Variable input3, const Variable input4,
-                             const Variable input5, const Variable input6, const Variable input7, const Variable input8,
-                             const Variable input9, const Variable input10, const Variable input11, const Variable input12);
+    // Normal forward-propagation like FunctionSqrt(Variable) -> Variable
+    virtual Variable forward(Variable input);
+    // Bi-Arg functions like loss functions
+    virtual Variable forward(Variable x, Variable t);
+    virtual Variable forward(Variable input1, Variable input2, Variable input3);
 
-    virtual void backward(cuMat &p_grad);
-    virtual Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    virtual void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad);
+
+    // Core propagation functions
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 
     void init();
-    void clip_grad(Variable_base *v);
-
+    void clip_grad(VariableBase *v);
     virtual void reset_state();
-    
+
+private:
+    friend class boost::serialization::access;
+    template<class Archive> void serialize(Archive &ar, const unsigned int version){}
 };
 
-class FunctionPlus : public Function_base{
+class FunctionPlus : public FunctionBase{
 public:
     FunctionPlus();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
-
-class FuncitonMinus : public Function_base{
+ 
+class FunctionMinus : public FunctionBase{
 public:
-    FuncitonMinus();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void  backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    FunctionMinus();
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionMul : public Function_base{
+class FunctionMul : public FunctionBase{
+public:
     FunctionMul();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSin : public Function_base{
+class FunctionSin : public FunctionBase{
 public:
+    Variable rr = nullptr;
     FunctionSin();
-    Variable rr = nullptr;
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-//PVariable 
-class FunctionCos : public Function_base{
+class FunctionCos : public FunctionBase{
 public:
-    FunctionCos();
     Variable rr = nullptr;
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    FunctionCos();
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionLog : public Function_base{
+class FunctionLog : public FunctionBase{
 public:
     FunctionLog();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSqrt : public Function_base{
-public:
-    FunctionSqrt();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-};
-
-class FunctionInverse : public Function_base{
+class FunctionInverse : public FunctionBase{
 public:
     FunctionInverse();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionLinear : public Function_base{
+class FunctionSqrt : public FunctionBase{
 public:
-    Variable_base *w;
-    Variable_base *b;
+    FunctionSqrt();
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+};
+
+class FunctionLinear : public FunctionBase{
+public:
+    VariableBase *w, *b;
     cuMat i1;
 
     bool no_bias_ = false;
     bool is_transpose_ = false;
 
     FunctionLinear();
-    FunctionLinear(Variable_base *w, Variable_base *b, bool is_transpose = false);
-    FunctionLinear(Variable_base *w, bool is_transpose = false);
+    FunctionLinear(VariableBase *w, VariableBase *b, bool is_transpose = false);
+    FunctionLinear(VariableBase *w, bool is_transpose = false);
     FunctionLinear(int output_size, int input_size);
-    FunctionLinear(int output_size ,int input_size, bool no_bias);
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    FunctionLinear(int output_size, int input_size, bool no_bias);
+
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
     void toHostArray();
-    void formHostArray();
+    void formHostArra();
+
+private:
+    friend class boost::serialization::access;
+    template<class Archive> void serialize(Archive &ar, const unsigned int version){
+        ar & boost::serialization::base_object<FunctionBase>(*this);
+        ar & * w;
+        ar & b;
+        ar & i1;
+        ar & no_bias_;
+        ar & is_transpose_;
+    }
 };
 
-class FunctionReLU : public Function_base{
+class FunctionReLU : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionReLU();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionPReLU : public Function_base{
-public:
-    Variable *a;
-    Variable xd = nullptr;
-    Variable ad = nullptr;
+class FunctionPReLU : public FunctionBase{
+    VariableBase *a;
+    // differential of x
+    Variable x_d = nullptr;
+    // differentail of d
+    Variable a_d = nullptr;
     FunctionPReLU();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionSigmoid : public Function_base{
+class FunctionSigmoid : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionSigmoid();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backwrad(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionTanh : public Function_base{
+class FunctionTanh : public FunctionBase{
 public:
     Variable rr = nullptr;
     FunctionTanh();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inpus, std::vector<Variable> &outputs);
 };
 
-class FunctionSoftmax : public Function_base{
+class FunctionSoftmax : public FunctionBase{
 public:
     FunctionSoftmax();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outpus);
 };
 
-class FunctionSoftmaxCrossEntropy : public Function_base{
+class FunctionSoftmaxCrossEntropy : public FunctionBase{
 public:
-    Variable rr = nullptr;
-    Variable rr2 = nullptr;
-    Variable rr3 = nullptr;
+    Variable rr1 = nullptr, rr2 = nullptr, rr3 = nullptr;
     cuMat loss;
     cuMat *seed = nullptr;
 
     FunctionSoftmaxCrossEntropy();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionMeanSquareError : public Function_base{
+class FunctionMeanSquaredError : public FunctionBase{
 public:
     Variable rr = nullptr;
-    cuMat loss;
-    FunctionMeanSquareError();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void backward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
 
-class FunctionIdentity : public Function_base{
+class FunctionIdentity : public FunctionBase{
 public:
     FunctionIdentity();
-    Variable forward(const std::vector<Variable> &inputs, std::vector<Variable> &ouputs);
-    void backward(cuMat &p_grad, const std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual Variable forward(std::vector<Variable> &inputs, std::vector<Variable> &outputs);
+    virtual void bakcward(cuMat &output_grad, std::vector<Variable> &inputs, std::vector<Variable> &outputs);
 };
-
-
 #endif

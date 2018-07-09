@@ -8,6 +8,9 @@ cuMat/html
 cuMat/latex
 cuMat/Doxyfile
 cuMat/Doxyfile.bak
+cuMat/*.o
+cuMat/test1
+cuMat/test2
 html/
 latex/
 Doxyfile

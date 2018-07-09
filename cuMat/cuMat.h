@@ -621,8 +621,6 @@ public:
         cudaThreadSynchronize();
     }
 
-private:
-
     /*!
       @brief This function calculates r[i][j] <= this[i][j] + b[i][j]
      */
@@ -1083,7 +1081,7 @@ public:
     void softmax_cross_entropy(cuMat &t, cuMat &r){
         softmax_cross_entropy_kernel_exec(device_, t.device_, r.device_, cols_, rows_);
     }
-private:
+    
     //followings are backends of mathematical functions.
 
     void cos(cuMat &r){
