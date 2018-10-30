@@ -28,9 +28,15 @@ set(LINK_LIBRARIES
   ${Boost_LIBRARIES}
   )
 
-add_executable(main src/main.cpp)
+add_executable(test1 src/test1.cpp)
+add_executable(test2 src/test2.cpp)
 
-target_link_libraries(main
+target_link_libraries(test1
+  ${LINK_LIBRARIES}
+  cuMat
+  )
+
+target_link_libraries(test2
   ${LINK_LIBRARIES}
   cuMat
   )
