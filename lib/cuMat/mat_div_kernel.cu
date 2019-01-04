@@ -1,4 +1,4 @@
-#include "mat_div_kernel.h"
+#include "DeepLearning/cuMat/mat_div_kernel.h"
 
 static const int block_size = 32;
 //apply dst[i][j] = src1[i][j] / src2[i][j]

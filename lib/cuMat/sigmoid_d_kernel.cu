@@ -1,4 +1,4 @@
-#include "sigmoid_d_kernel.h"
+#include "DeepLearning/cuMat/sigmoid_d_kernel.h"
 
 #include <cmath>
 

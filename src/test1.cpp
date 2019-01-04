@@ -1,4 +1,4 @@
-#include "cuMat/cuMat.hpp"
+#include "DeepLearning/cuMat/cuMat.hpp"
 
 MallocCounter mallocCounter;
 

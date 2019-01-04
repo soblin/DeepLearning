@@ -1,4 +1,4 @@
-#include "mat_mul_plus_elementwise_kernel.h"
+#include "DeepLearning/cuMat/mat_mul_plus_elementwise_kernel.h"
 
 static const int block_size = 32;
 

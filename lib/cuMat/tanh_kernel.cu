@@ -1,4 +1,4 @@
-#include "tanh_kernel.h"
+#include "DeepLearning/cuMat/tanh_kernel.h"
 
 #include <cmath>
 

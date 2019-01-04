@@ -1,4 +1,4 @@
-#include "mat_l2_kernel.h"
+#include "DeepLearning/cuMat/mat_l2_kernel.h"
 
 static const int block_size = 32;
 

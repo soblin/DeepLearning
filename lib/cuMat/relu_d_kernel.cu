@@ -1,4 +1,4 @@
-#include "relu_d_kernel.h"
+#include "DeepLearning/cuMat/relu_d_kernel.h"
 
 static const int block_size = 32;
 

@@ -1,4 +1,4 @@
-#include "mat_cos_kernel.h"
+#include "DeepLearning/cuMat/mat_cos_kernel.h"
 #include <cmath>
 
 static const int block_size = 32;

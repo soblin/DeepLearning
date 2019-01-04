@@ -1,5 +1,4 @@
-#include "mat_exp_kernel.h"
-
+#include "DeepLearning/cuMat/mat_exp_kernel.h"
 #include <cmath>
 
 static const int block_size = 32;

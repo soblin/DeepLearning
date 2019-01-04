@@ -1,4 +1,4 @@
-#include "mat_log_kernel.h"
+#include "DeepLearning/cuMat/mat_log_kernel.h"
 
 #include <cmath>
 

@@ -1,4 +1,4 @@
-#include "slice_rows_kernel.h"
+#include "DeepLearning/cuMat/slice_rows_kernel.h"
 #include <stdio.h>
 #define BLOCK_SIZE 32
 

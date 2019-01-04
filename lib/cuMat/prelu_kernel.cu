@@ -1,4 +1,4 @@
-#include "prelu_kernel.h"
+#include "DeepLearning/cuMat/prelu_kernel.h"
 
 static const int block_size = 32;
 

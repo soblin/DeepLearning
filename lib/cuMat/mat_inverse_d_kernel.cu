@@ -1,4 +1,4 @@
-#include "mat_inverse_d_kernel.h"
+#include "DeepLearning/cuMat/mat_inverse_d_kernel.h"
 
 static const int block_size = 32;
 

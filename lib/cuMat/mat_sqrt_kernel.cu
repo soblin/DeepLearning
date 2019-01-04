@@ -1,4 +1,4 @@
-#include "mat_sqrt_kernel.h"
+#include "DeepLearning/cuMat/mat_sqrt_kernel.h"
 
 #include <cmath>
 

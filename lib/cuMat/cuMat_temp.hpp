@@ -8,30 +8,30 @@
 #ifndef CUMAT_HPP_
 #define CUMAT_HPP_
 
-#include "include/mat_ones_kernel.h"
-#include "include/mat_mul_elementwise_kernel.h"
-#include "include/mat_mul_plus_elementwise_kernel.h"
-#include "include/mat_mod_kernel.h"
-#include "include/slice_rows_kernel.h"
-#include "include/mat_div_kernel.h"
-#include "include/mat_log_kernel.h"
-#include "include/mat_sqrt_kernel.h"
-#include "include/mat_sqrt_d_kernel.h"
-#include "include/mat_cos_kernel.h"
-#include "include/mat_sin_kernel.h"
-#include "include/relu_kernel.h"
-#include "include/relu_d_kernel.h"
-#include "include/prelu_kernel.h"
-#include "include/prelu_d_kernel.h"
-#include "include/sigmoid_kernel.h"
-#include "include/sigmoid_d_kernel.h"
-#include "include/tanh_kernel.h"
-#include "include/tanh_d_kernel.h"
-#include "include/softmax_kernel.h"
-#include "include/mat_l2_kernel.h"
-#include "include/mat_exp_kernel.h"
-#include "include/mat_inverse_kernel.h"
-#include "include/mat_inverse_d_kernel.h"
+#include "DeepLearning/cuMat/include/mat_ones_kernel.h"
+#include "DeepLearning/cuMat/include/mat_mul_elementwise_kernel.h"
+#include "DeepLearning/cuMat/include/mat_mul_plus_elementwise_kernel.h"
+#include "DeepLearning/cuMat/include/mat_mod_kernel.h"
+#include "DeepLearning/cuMat/include/slice_rows_kernel.h"
+#include "DeepLearning/cuMat/include/mat_div_kernel.h"
+#include "DeepLearning/cuMat/include/mat_log_kernel.h"
+#include "DeepLearning/cuMat/include/mat_sqrt_kernel.h"
+#include "DeepLearning/cuMat/include/mat_sqrt_d_kernel.h"
+#include "DeepLearning/cuMat/include/mat_cos_kernel.h"
+#include "DeepLearning/cuMat/include/mat_sin_kernel.h"
+#include "DeepLearning/cuMat/include/relu_kernel.h"
+#include "DeepLearning/cuMat/include/relu_d_kernel.h"
+#include "DeepLearning/cuMat/include/prelu_kernel.h"
+#include "DeepLearning/cuMat/include/prelu_d_kernel.h"
+#include "DeepLearning/cuMat/include/sigmoid_kernel.h"
+#include "DeepLearning/cuMat/include/sigmoid_d_kernel.h"
+#include "DeepLearning/cuMat/include/tanh_kernel.h"
+#include "DeepLearning/cuMat/include/tanh_d_kernel.h"
+#include "DeepLearning/cuMat/include/softmax_kernel.h"
+#include "DeepLearning/cuMat/include/mat_l2_kernel.h"
+#include "DeepLearning/cuMat/include/mat_exp_kernel.h"
+#include "DeepLearning/cuMat/include/mat_inverse_kernel.h"
+#include "DeepLearning/cuMat/include/mat_inverse_d_kernel.h"
 
 #include <iostream>
 #include <iomanip>
@@ -45,8 +45,8 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "cublas_v2.h"
-#include "cuda_runtime.h"
+#include "DeepLearning/cuMat/cublas_v2.h"
+#include "DeepLearning/cuMat/cuda_runtime.h"
 
 /*!
    @brief convert 2D-index to 1D-array index(column major)

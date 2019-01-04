@@ -1,4 +1,4 @@
-#include "softmax_kernel.h"
+#include "DeepLearning/cuMat/softmax_kernel.h"
 
 #include <cmath>
 
